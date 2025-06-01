@@ -2,6 +2,7 @@ package org.ms.library.catalog.entity;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class Book {
     @ManyToMany
     @JoinTable(name = "tb_book_category",
             joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<Category> categories;
+    private Set<Category> categories = new HashSet<>();
 
     public Book(Long id, String title, String author, Double price, Set<Category> categories) {
         this.id = id;
@@ -25,6 +26,10 @@ public class Book {
         this.author = author;
         this.price = price;
         this.categories = categories;
+    }
+
+    public Book() {
+
     }
 
 
