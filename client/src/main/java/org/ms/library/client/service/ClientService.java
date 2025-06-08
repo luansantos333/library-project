@@ -1,5 +1,6 @@
 package org.ms.library.client.service;
 
+import org.ms.library.client.dto.ClientAddressDTO;
 import org.ms.library.client.dto.ClientDTO;
 import org.ms.library.client.entity.Client;
 import org.ms.library.client.repository.ClientRepository;
@@ -35,12 +36,22 @@ public class ClientService {
 
     }
 
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public Page<ClientDTO> findClient(String name, String cpf, Pageable pageable) {
+
         Page<Client> byName = clientRepository.findByName(name, cpf, pageable);
         return byName.map(x -> new ClientDTO(x));
 
     }
 
 
+    @Transactional(readOnly = true)
+    public ClientAddressDTO findClientAddressById(Long id) {
+
+
+        Client client = clientRepository.findAddressAndClientById(id).orElseThrow(() -> new ClientNotFoundException("Client not found with id: " + id));
+
+        return new ClientAddressDTO(client);
+
+    }
 }

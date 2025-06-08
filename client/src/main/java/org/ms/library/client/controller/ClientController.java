@@ -1,5 +1,6 @@
 package org.ms.library.client.controller;
 
+import org.ms.library.client.dto.ClientAddressDTO;
 import org.ms.library.client.dto.ClientDTO;
 import org.ms.library.client.service.ClientService;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,16 @@ public class ClientController {
 
 
         return ResponseEntity.ok(client);
+
+    }
+
+
+    @GetMapping ("/address/{id}")
+    public ResponseEntity<ClientAddressDTO> findClientAndAddress(@PathVariable(name = "id") Long id) {
+
+        ClientAddressDTO clientAddressById = clientService.findClientAddressById(id);
+
+        return ResponseEntity.ok(clientAddressById);
 
     }
 
