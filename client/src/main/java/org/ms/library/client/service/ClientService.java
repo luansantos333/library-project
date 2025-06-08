@@ -54,4 +54,12 @@ public class ClientService {
         return new ClientAddressDTO(client);
 
     }
+
+    @Transactional(readOnly = true)
+    public Page<ClientAddressDTO> findClientsAndAdressesByNameOrCPF(Pageable pageable, String name, String cpf) {
+
+
+
+
+    }
 }

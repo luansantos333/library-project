@@ -39,11 +39,21 @@ public class ClientController {
 
 
     @GetMapping ("/address/{id}")
-    public ResponseEntity<ClientAddressDTO> findClientAndAddress(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<ClientAddressDTO> findClientAndAddressByID(@PathVariable(name = "id") Long id) {
 
         ClientAddressDTO clientAddressById = clientService.findClientAddressById(id);
 
         return ResponseEntity.ok(clientAddressById);
+
+    }
+
+    @GetMapping ("/address")
+    public ResponseEntity<Page<ClientAddressDTO>> findClientsAndAddressesByNameOrCPF (Pageable p, String name, String cpf) {
+
+
+        clientService.findClientsAndAdressesByNameOrCPF();
+
+
 
     }
 
