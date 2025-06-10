@@ -4,6 +4,7 @@ import org.ms.library.client.dto.ClientAddressDTO;
 import org.ms.library.client.dto.ClientDTO;
 import org.ms.library.client.entity.Client;
 import org.ms.library.client.repository.ClientRepository;
+import org.ms.library.client.repository.projections.ClientAddressProjection;
 import org.ms.library.client.service.exceptions.ClientNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,10 +57,11 @@ public class ClientService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ClientAddressDTO> findClientsAndAdressesByNameOrCPF(Pageable pageable, String name, String cpf) {
+    public Page<ClientAddressProjection> findClientsAndAdressesByNameOrCPF(Pageable pageable, String name, String cpf) {
 
+        Page<ClientAddressProjection> clientAddressProjections = clientRepository.searchClientAddressByClientNameOrCpf(pageable, name, cpf);
 
-
+        return clientAddressProjections;
 
     }
 }

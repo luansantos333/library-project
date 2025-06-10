@@ -2,6 +2,7 @@ package org.ms.library.client.controller;
 
 import org.ms.library.client.dto.ClientAddressDTO;
 import org.ms.library.client.dto.ClientDTO;
+import org.ms.library.client.repository.projections.ClientAddressProjection;
 import org.ms.library.client.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,12 +49,14 @@ public class ClientController {
     }
 
     @GetMapping ("/address")
-    public ResponseEntity<Page<ClientAddressDTO>> findClientsAndAddressesByNameOrCPF (Pageable p, String name, String cpf) {
+    public ResponseEntity<Page<ClientAddressProjection>> findClientsAndAddressesByNameOrCPF (Pageable p, @RequestParam (name = "name", required = false) String name,
+                                                                                             @RequestParam (name = "cpf", required = false) String cpf) {
 
 
-        clientService.findClientsAndAdressesByNameOrCPF();
+        Page<ClientAddressProjection> clientsAndAdressesByNameOrCPF = clientService.findClientsAndAdressesByNameOrCPF(p, name, cpf);
 
 
+        return ResponseEntity.ok(clientsAndAdressesByNameOrCPF);
 
     }
 
