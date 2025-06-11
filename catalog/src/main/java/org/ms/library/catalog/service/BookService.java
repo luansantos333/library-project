@@ -11,6 +11,7 @@ import org.ms.library.catalog.service.exceptions.NoCategoryFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BookService {
@@ -24,6 +25,8 @@ public class BookService {
         this.categoryRepository = categoryRepository;
     }
 
+
+    @Transactional (readOnly = true)
     public Page<BookDTO> getAllBooksPaged(Pageable pageable) {
 
         Page<Book> allBooksPaged = bookRepository.findAll(pageable);
@@ -32,12 +35,14 @@ public class BookService {
 
     }
 
+    @Transactional(readOnly = true)
     public BookDTO getBookById(Long id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new NoBookFoundException("No book found with id: " + id));
         return new BookDTO(book);
 
     }
 
+    @Transactional
     public BookCategoriesDTO createBook (BookCategoriesDTO bookDTO) {
 
         for (Long id  : bookDTO.getCategories_ids()) {
@@ -53,6 +58,24 @@ public class BookService {
         DTOtoEntity(bookDTO, book);
         bookRepository.save(book);
         return new BookCategoriesDTO(book);
+    }
+
+
+    @Transactional
+    public BookCategoriesDTO updateBook (Long id, BookCategoriesDTO bookDTO) {
+
+        if (!bookRepository.existsById(id)) {
+
+            throw new NoBookFoundException("No book found with this id: " + id);
+        }
+
+        Book referenceById = bookRepository.getReferenceById(id);
+        DTOtoEntity(bookDTO, referenceById);
+
+        bookRepository.save(referenceById);
+        return new BookCategoriesDTO(referenceById);
+
+
     }
 
     private void DTOtoEntity(BookCategoriesDTO bookDTO, Book book) {
