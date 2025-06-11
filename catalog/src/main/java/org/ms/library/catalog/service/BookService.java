@@ -26,7 +26,7 @@ public class BookService {
     }
 
 
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public Page<BookDTO> getAllBooksPaged(Pageable pageable) {
 
         Page<Book> allBooksPaged = bookRepository.findAll(pageable);
@@ -43,9 +43,9 @@ public class BookService {
     }
 
     @Transactional
-    public BookCategoriesDTO createBook (BookCategoriesDTO bookDTO) {
+    public BookCategoriesDTO createBook(BookCategoriesDTO bookDTO) {
 
-        for (Long id  : bookDTO.getCategories_ids()) {
+        for (Long id : bookDTO.getCategories_ids()) {
 
             if (!categoryRepository.existsById(id)) {
 
@@ -62,7 +62,7 @@ public class BookService {
 
 
     @Transactional
-    public BookCategoriesDTO updateBook (Long id, BookCategoriesDTO bookDTO) {
+    public BookCategoriesDTO updateBook(Long id, BookCategoriesDTO bookDTO) {
 
         if (!bookRepository.existsById(id)) {
 
@@ -93,4 +93,16 @@ public class BookService {
     }
 
 
+    @Transactional
+    public void deleteBookById(Long id) {
+
+        if (!bookRepository.existsById(id)) {
+
+
+            throw new NoBookFoundException("No book found with this id: " + id);
+        }
+
+        bookRepository.deleteById(id);
+
+    }
 }
