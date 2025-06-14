@@ -1,7 +1,9 @@
 package org.ms.library.catalog.controller;
 
+import jakarta.ws.rs.PathParam;
 import org.ms.library.catalog.dto.BookCategoriesDTO;
 import org.ms.library.catalog.dto.BookDTO;
+import org.ms.library.catalog.repository.projection.BookCategoriesProjection;
 import org.ms.library.catalog.service.BookService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/catalog/book")
@@ -29,6 +32,17 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    @GetMapping("/categories/{title}")
+    public ResponseEntity<Page<BookCategoriesProjection>> getAllBookCategories(@PathVariable(name = "title") String title,
+                                                                               @RequestParam(name = "author", required = false) String author,
+                                                                               @RequestParam(name = "categories", required = false) Set<String> categories,
+                                                                               Pageable pageable) {
+        Page<BookCategoriesProjection> allBooksAndCategories = service.getAllBooksAndCategories(title, author, categories, pageable);
+        return ResponseEntity.ok(allBooksAndCategories);
+
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<BookDTO> findOneBook(@PathVariable(name = "id") Long id) {
 
@@ -46,16 +60,16 @@ public class BookController {
 
     }
 
-    @PutMapping ("/{id}")
-    public ResponseEntity <BookCategoriesDTO> updateBook(@PathVariable(name = "id") Long id, @RequestBody BookCategoriesDTO bookDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<BookCategoriesDTO> updateBook(@PathVariable(name = "id") Long id, @RequestBody BookCategoriesDTO bookDTO) {
 
         BookCategoriesDTO bookCategoriesDTO = service.updateBook(id, bookDTO);
         return ResponseEntity.ok(bookCategoriesDTO);
 
     }
 
-    @DeleteMapping ("/{id}")
-    public ResponseEntity <Void> deleteBook(@PathVariable(name = "id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable(name = "id") Long id) {
 
         service.deleteBookById(id);
         return ResponseEntity.noContent().build();

@@ -6,12 +6,16 @@ import org.ms.library.catalog.entity.Book;
 import org.ms.library.catalog.entity.Category;
 import org.ms.library.catalog.repository.BookRepository;
 import org.ms.library.catalog.repository.CategoryRepository;
+import org.ms.library.catalog.repository.projection.BookCategoriesProjection;
 import org.ms.library.catalog.service.exceptions.NoBookFoundException;
 import org.ms.library.catalog.service.exceptions.NoCategoryFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class BookService {
@@ -77,6 +81,17 @@ public class BookService {
 
 
     }
+
+
+    public Page<BookCategoriesProjection> getAllBooksAndCategories(String title, String author, Set<String> category, Pageable pageable) {
+
+
+        Page<BookCategoriesProjection> books = bookRepository.findAllBooksCategories(title, author, category, pageable);
+
+        return books;
+
+    }
+
 
     private void DTOtoEntity(BookCategoriesDTO bookDTO, Book book) {
 
