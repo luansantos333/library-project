@@ -1,6 +1,5 @@
 package org.ms.library.catalog.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.ms.library.catalog.entity.Book;
 import org.ms.library.catalog.entity.Category;
 

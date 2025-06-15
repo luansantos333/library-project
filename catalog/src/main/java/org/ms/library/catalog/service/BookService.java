@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -83,12 +83,13 @@ public class BookService {
     }
 
 
+    @Transactional (readOnly = true)
     public Page<BookCategoriesProjection> getAllBooksAndCategories(String title, String author, Set<String> category, Pageable pageable) {
 
 
-        Page<BookCategoriesProjection> books = bookRepository.findAllBooksCategories(title, author, category, pageable);
+        Optional<Page<BookCategoriesProjection>> books = bookRepository.findAllBooksCategories(title, author, category, pageable);
 
-        return books;
+        return books.orElseThrow(() -> new NoBookFoundException("No books found with title: " + title + ", author: " + author + ", category: " + category));
 
     }
 

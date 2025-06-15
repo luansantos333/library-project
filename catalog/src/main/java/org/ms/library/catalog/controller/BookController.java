@@ -1,6 +1,5 @@
 package org.ms.library.catalog.controller;
 
-import jakarta.ws.rs.PathParam;
 import org.ms.library.catalog.dto.BookCategoriesDTO;
 import org.ms.library.catalog.dto.BookDTO;
 import org.ms.library.catalog.repository.projection.BookCategoriesProjection;
