@@ -13,6 +13,6 @@ public interface UserFeignClient {
 
 
     @GetMapping
-    ResponseEntity<UserDTO> findUserByEmail(@RequestParam(required = true, name = "username") String username);
+    ResponseEntity<UserDTO> findUserRoleByUsername(@RequestParam(required = true, name = "username") String username);
 
 }

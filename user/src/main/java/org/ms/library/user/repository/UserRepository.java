@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
      @Query
      Optional<User> findUserByUsername(String username);
@@ -16,6 +17,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
      @Query (value = "SELECT u.username AS email, u.password AS password, r.id AS roleId, r.authority AS role, r.description AS roleDescription " +
              "FROM tb_user u JOIN u.roles r WHERE u.username = :username")
      List<UserDetailsProjection> findUserDetailsByUsername(String username);
+
+     @Query
+     Optional<User> findUserById(UUID id);
 
 
 }

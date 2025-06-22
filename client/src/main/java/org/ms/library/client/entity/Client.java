@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity(name = "tb_client")
 public class Client {
@@ -18,6 +19,9 @@ public class Client {
     @OneToOne
     @JoinColumn (name = "address_id")
     private Address address;
+
+    @Column (name = "user_id")
+    private UUID user_id;
 
 
     public Long getId() {
@@ -66,6 +70,14 @@ public class Client {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public UUID getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(UUID user_id) {
+        this.user_id = user_id;
     }
 
     @Override

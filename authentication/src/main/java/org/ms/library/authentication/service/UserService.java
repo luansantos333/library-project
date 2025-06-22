@@ -25,7 +25,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserDTO userDetailsByUsername = userFeignClient.findUserByEmail(username).getBody();
+        UserDTO userDetailsByUsername = userFeignClient.findUserRoleByUsername(username).getBody();
 
         if (userDetailsByUsername == null) {
 

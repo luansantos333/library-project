@@ -5,9 +5,11 @@ import org.ms.library.user.entity.User;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class UserDTO {
 
+    private UUID id;
     private String username;
     private Set<RoleDTO> roles = new HashSet<>();
     private String password;
@@ -15,6 +17,7 @@ public class UserDTO {
 
     public UserDTO(User entity) {
 
+        this.id = entity.getId();
         this.username = entity.getUsername();
         this.password = entity.getPassword();
 
@@ -26,6 +29,11 @@ public class UserDTO {
 
     }
 
+    public UserDTO(UUID id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
 
     public void setUsername(String username) {
         this.username = username;
@@ -49,5 +57,9 @@ public class UserDTO {
 
     public Set<RoleDTO> getRoles() {
         return roles;
+    }
+
+    public UUID getId() {
+        return id;
     }
 }

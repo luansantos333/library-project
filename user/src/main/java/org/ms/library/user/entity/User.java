@@ -5,14 +5,15 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity (name = "tb_user")
 
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     @Column(unique = true, nullable = false)
     private String username;
     private String password;
@@ -21,7 +22,7 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
 
-    public User(Long id, String username, String password, Set<Role> roles) {
+    public User(UUID id, String username, String password, Set<Role> roles) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -44,11 +45,11 @@ public class User {
         return Objects.hash(id, username);
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

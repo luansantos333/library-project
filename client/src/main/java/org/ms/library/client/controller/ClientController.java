@@ -60,5 +60,13 @@ public class ClientController {
 
     }
 
+    @PostMapping
+    public ResponseEntity<ClientDTO> createClientAndUser(@RequestBody ClientDTO clientDTO) {
+
+
+
+
+    }
+
 
 }

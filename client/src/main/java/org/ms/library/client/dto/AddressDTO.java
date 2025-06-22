@@ -1,6 +1,9 @@
 package org.ms.library.client.dto;
 
+import jakarta.persistence.Column;
 import org.ms.library.client.entity.Address;
+
+import java.util.UUID;
 
 public class AddressDTO {
 
@@ -10,7 +13,6 @@ public class AddressDTO {
     private String state;
     private String zip;
     private String country;
-
 
     public AddressDTO(Address entity) {
 
@@ -48,4 +50,6 @@ public class AddressDTO {
     public String getCountry() {
         return country;
     }
+
+
 }
