@@ -35,9 +35,6 @@ public class UserDTO {
         this.password = password;
     }
 
-    public UserDTO() {
-    }
-
     public void setUsername(String username) {
         this.username = username;
     }

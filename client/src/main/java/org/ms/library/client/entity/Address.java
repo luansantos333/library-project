@@ -28,14 +28,6 @@ public class Address {
         this.country = country;
     }
 
-    public Address(String address, String city, String state, String zip, String country, Client client) {
-        this.address = address;
-        this.city = city;
-        this.state = state;
-        this.zip = zip;
-        this.country = country;
-        this.client = client;
-    }
 
     public Address() {
     }

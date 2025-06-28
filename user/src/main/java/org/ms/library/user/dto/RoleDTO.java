@@ -16,10 +16,6 @@ public class RoleDTO {
 
     }
 
-
-    public RoleDTO() {
-    }
-
     public Long getId() {
         return id;
     }

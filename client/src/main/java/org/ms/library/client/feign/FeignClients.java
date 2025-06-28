@@ -13,7 +13,7 @@ public interface FeignClients {
 
 
     @PostMapping
-    ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO);
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO);
 
 
 }

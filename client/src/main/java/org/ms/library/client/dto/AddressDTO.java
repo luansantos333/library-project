@@ -27,9 +27,6 @@ public class AddressDTO {
     }
 
 
-    public AddressDTO() {
-    }
-
     public Long getId() {
         return id;
     }

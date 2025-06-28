@@ -2,7 +2,7 @@ package org.ms.library.client.dto;
 
 import org.ms.library.client.entity.Client;
 
-public class ClientAddressUserDTO {
+public class ClientUserDTO {
 
     private Long id;
     private String name;
@@ -10,9 +10,9 @@ public class ClientAddressUserDTO {
     private String cpf;
     private String phone;
     private AddressDTO address;
-    private UserDTO user;
+    private UserCompleteDTO user;
 
-    public ClientAddressUserDTO(Client entity, UserDTO user) {
+    public ClientUserDTO(Client entity, UserCompleteDTO user) {
 
         this.id = entity.getId();
         this.name = entity.getName();
@@ -20,13 +20,10 @@ public class ClientAddressUserDTO {
         this.cpf = entity.getCpf();
         this.phone = entity.getPhone();
         this.address = new AddressDTO(entity.getAddress());
-        this.user = user;
+        this.user = new UserCompleteDTO();
 
     }
 
-
-    public ClientAddressUserDTO() {
-    }
 
     public Long getId() {
         return id;
@@ -52,7 +49,7 @@ public class ClientAddressUserDTO {
         return address;
     }
 
-    public UserDTO getUser() {
+    public UserCompleteDTO getUser() {
         return user;
     }
 }
