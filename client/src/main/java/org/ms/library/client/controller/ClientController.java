@@ -1,6 +1,7 @@
 package org.ms.library.client.controller;
 
 import org.ms.library.client.dto.ClientAddressDTO;
+import org.ms.library.client.dto.ClientAddressUserDTO;
 import org.ms.library.client.dto.ClientDTO;
 import org.ms.library.client.repository.projections.ClientAddressProjection;
 import org.ms.library.client.service.ClientService;
@@ -8,6 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping(path = "/api/client")
@@ -61,9 +65,12 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<ClientDTO> createClientAndUser(@RequestBody ClientDTO clientDTO) {
+    public ResponseEntity<ClientAddressUserDTO> createClientAndUser(@RequestBody ClientAddressUserDTO clientAddressUserDTO) {
 
 
+        ClientAddressUserDTO clientAddress = clientService.createClientAddress(clientAddressUserDTO);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(clientAddress.getId()).toUri();
+        return ResponseEntity.created(location).body(clientAddress);
 
 
     }

@@ -1,6 +1,5 @@
 package org.ms.library.user.service;
 
-import org.ms.library.user.dto.RoleDTO;
 import org.ms.library.user.dto.UserDTO;
 import org.ms.library.user.entity.Role;
 import org.ms.library.user.entity.User;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -90,7 +88,7 @@ public class UserService {
 
     private void copyDTOToEntity(UserDTO userDTO, User user) {
 
-        Role roleUser = rolesRepository.findByRoleByAuthority("ROLE_USER").orElseThrow(() -> new NoSuchElementException());
+        Role roleUser = rolesRepository.findByAuthority("ROLE_USER").orElseThrow(() -> new NoSuchElementException());
         user.setUsername(userDTO.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         user.getRoles().add(new Role(roleUser.getId(), roleUser.getAuthority(),  roleUser.getDescription()));
