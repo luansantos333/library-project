@@ -1,13 +1,17 @@
 package org.ms.library.client.service;
 
-import org.ms.library.client.dto.ClientAddressDTO;
-import org.ms.library.client.dto.ClientDTO;
+import org.ms.library.client.dto.*;
+import org.ms.library.client.entity.Address;
 import org.ms.library.client.entity.Client;
+import org.ms.library.client.feign.FeignClients;
+import org.ms.library.client.repository.AddressRepository;
 import org.ms.library.client.repository.ClientRepository;
 import org.ms.library.client.repository.projections.ClientAddressProjection;
 import org.ms.library.client.service.exceptions.ClientNotFoundException;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +21,15 @@ import java.util.Optional;
 public class ClientService {
 
     private final ClientRepository clientRepository;
+    private final FeignClients feignClient;
+    private final AddressRepository addressRepository;
 
-    public ClientService(ClientRepository clientRepository) {
+
+    public ClientService(ClientRepository clientRepository, FeignClients feignClient, AddressRepository addressRepository) {
         this.clientRepository = clientRepository;
+        this.feignClient = feignClient;
+        this.addressRepository = addressRepository;
     }
-
 
     @Transactional(readOnly = true)
     public ClientDTO findClientById(Long id) {
@@ -59,9 +67,52 @@ public class ClientService {
     @Transactional(readOnly = true)
     public Page<ClientAddressProjection> findClientsAndAdressesByNameOrCPF(Pageable pageable, String name, String cpf) {
 
-        Page<ClientAddressProjection> clientAddressProjections = clientRepository.searchClientAddressByClientNameOrCpf(pageable, name, cpf);
-
-        return clientAddressProjections;
+        return clientRepository.searchClientAddressByClientNameOrCpf(pageable, name, cpf);
 
     }
+
+
+    @Transactional
+    public ClientAddressUserDTO createClientAddress(ClientAddressUserDTO clientAddressUserDTO) {
+
+        Client client = new Client();
+        Address address = new Address();
+        UserDTO user = createUser(clientAddressUserDTO);
+        copyDTOContentToEntity(clientAddressUserDTO, client, user, address);
+        client.setUser_id(user.getId());
+        Client savedClient = clientRepository.save(client);
+        return new ClientAddressUserDTO(savedClient, user);
+
+    }
+
+
+    public UserDTO createUser(ClientAddressUserDTO clientAddressUserDTO) {
+
+        UserDTO userDTO = new UserDTO(clientAddressUserDTO.getUser().getUsername(), clientAddressUserDTO.getUser().getPassword());
+
+        ResponseEntity<UserDTO> user = feignClient.createUser(userDTO);
+
+        return user.getBody();
+
+    }
+
+
+    private void copyDTOContentToEntity (ClientAddressUserDTO clientDTO,  Client entity, UserDTO userDTO, Address address) {
+
+        entity.setName(clientDTO.getName());
+        entity.setCpf(clientDTO.getCpf());
+        address.setCity(clientDTO.getAddress().getCity());
+        address.setState(clientDTO.getAddress().getState());
+        address.setCountry(clientDTO.getAddress().getCountry());
+        address.setZip(clientDTO.getAddress().getZip());
+        address.setAddress(clientDTO.getAddress().getAddress());
+        address.setClient(entity);
+        Address save = addressRepository.save(address);
+        entity.setLastName(clientDTO.getLastName());
+        entity.setPhone(clientDTO.getPhone());
+        entity.setAddress(save);
+        entity.setUser_id(userDTO.getId());
+
+    }
+
 }

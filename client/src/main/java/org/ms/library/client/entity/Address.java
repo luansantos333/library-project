@@ -15,8 +15,7 @@ public class Address {
     private String state;
     private String zip;
     private String country;
-    @OneToOne
-    @JoinColumn (name = "client_id")
+    @OneToOne (mappedBy = "address")
     private Client client;
 
     public Address(Long id, String address, String city, String state, String zip, String country) {
