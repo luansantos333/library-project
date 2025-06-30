@@ -14,12 +14,14 @@ public class BookCategoriesDTO {
     private Double price;
     private Set<CategoryDTO> categories = new HashSet<>();
     private Set<Long> categories_ids = new HashSet<>();
+    private Integer quantity;
 
     public BookCategoriesDTO(Book book) {
         this.id = book.getId();
         this.title = book.getTitle();
         this.author = book.getAuthor();
         this.price = book.getPrice();
+        this.quantity = book.getQuantity();
         for (Category entity : book.getCategories()) {
             this.categories.add(new CategoryDTO(entity));
         }
@@ -28,6 +30,11 @@ public class BookCategoriesDTO {
     }
 
     public BookCategoriesDTO() {
+    }
+
+
+    public Integer getQuantity() {
+        return quantity;
     }
 
     public Set<Long> getCategories_ids() {

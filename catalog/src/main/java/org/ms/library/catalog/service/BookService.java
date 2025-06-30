@@ -83,7 +83,7 @@ public class BookService {
     }
 
 
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public Page<BookCategoriesProjection> getAllBooksAndCategories(String title, String author, Set<String> category, Pageable pageable) {
 
 
@@ -94,11 +94,31 @@ public class BookService {
     }
 
 
+    @Transactional
+    public BookCategoriesDTO increaseBookStock(Long id, Integer amount) {
+
+        if (!bookRepository.existsById(id)) {
+
+
+            throw new NoBookFoundException("No book found with this id: " + id);
+
+        }
+
+        Book referenceById = bookRepository.getReferenceById(id);
+        referenceById.setQuantity(referenceById.getQuantity() + amount);
+
+        return new BookCategoriesDTO(bookRepository.save(referenceById));
+
+
+    }
+
+
     private void DTOtoEntity(BookCategoriesDTO bookDTO, Book book) {
 
         book.setTitle(bookDTO.getTitle());
         book.setAuthor(bookDTO.getAuthor());
         book.setPrice(bookDTO.getPrice());
+        book.setQuantity(bookDTO.getQuantity());
 
         for (Long dto : bookDTO.getCategories_ids()) {
             Category c = categoryRepository.findById(dto).get();

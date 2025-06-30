@@ -15,23 +15,33 @@ public class Book {
     private String title;
     private String author;
     private Double price;
+    private Integer quantity;
     @ManyToMany
     @JoinTable(name = "tb_book_category",
             joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
-    public Book(Long id, String title, String author, Double price, Set<Category> categories) {
+    public Book(Long id, Integer quantity, String title, String author, Double price, Set<Category> categories) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.price = price;
         this.categories = categories;
+        this.quantity = quantity;
     }
 
     public Book() {
 
     }
 
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public Long getId() {
         return id;

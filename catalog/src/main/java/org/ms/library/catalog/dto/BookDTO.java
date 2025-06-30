@@ -8,6 +8,7 @@ public class BookDTO {
     private String title;
     private String author;
     private Double price;
+    private Integer quantity;
 
     public BookDTO(Book entity) {
 
@@ -15,7 +16,12 @@ public class BookDTO {
         this.title =entity.getTitle();
         this.author = entity.getAuthor();
         this.price = entity.getPrice();
+        this.quantity = entity.getQuantity();
 
+    }
+
+    public Integer getQuantity() {
+        return quantity;
     }
 
     public Long getId() {

@@ -1,60 +1,57 @@
-INSERT INTO tb_book (title, author, price) VALUES ('A Song of Ice and Fire Vol I - A Game of Thrones', 'GRR Martin', 30.0);
-INSERT INTO tb_book (title, author, price) VALUES ('A Song of Ice and Fire Vol II - A Clash of Kings', 'GRR Martin', 35.0);
-INSERT INTO tb_book (title, author, price) VALUES ('A Song of Ice and Fire Vol III - A Storm of Swords', 'GRR Martin', 35.0);
-INSERT INTO tb_book (title, author, price) VALUES ('A Song of Ice and Fire Vol IV - A Feast for Crows', 'GRR Martin', 35.0);
-INSERT INTO tb_book (title, author, price) VALUES ('A Song of Ice and Fire Vol V - Dance With Dragons', 'GRR Martin', 35.0);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('A Song of Ice and Fire Vol I - A Game of Thrones', 'GRR Martin', 30.0, 15);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('A Song of Ice and Fire Vol II - A Clash of Kings', 'GRR Martin', 35.0, 12);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('A Song of Ice and Fire Vol III - A Storm of Swords', 'GRR Martin', 35.0, 12);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('A Song of Ice and Fire Vol IV - A Feast for Crows', 'GRR Martin', 35.0, 10);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('A Song of Ice and Fire Vol V - Dance With Dragons', 'GRR Martin', 35.0, 9);
 
-INSERT INTO tb_book (title, author, price) VALUES ('The Lord of The Rings Vol I - The Fellowship of The Ring', 'JRR Tolkien', 40.0);
-INSERT INTO tb_book (title, author, price) VALUES ('The Lord of The Rings Vol II - The Two Towers', 'JRR Tolkien', 40.0);
-INSERT INTO tb_book (title, author, price) VALUES ('The Lord of The Rings Vol III - The Return of The King', 'JRR Tolkien', 40.0);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Lord of The Rings Vol I - The Fellowship of The Ring', 'JRR Tolkien', 40.0, 25);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Lord of The Rings Vol II - The Two Towers', 'JRR Tolkien', 40.0, 22);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Lord of The Rings Vol III - The Return of The King', 'JRR Tolkien', 40.0, 23);
 
-INSERT INTO tb_book (title, author, price) VALUES ('The Banquet', 'Plato', 15.0);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Banquet', 'Plato', 15.0, 5);
 
-INSERT INTO tb_book (title, author, price) VALUES ('Crime and Punishment', 'Fyodor Dostoievsky', 30.0);
-INSERT INTO tb_book (title, author, price) VALUES ('Crime and Punishment', 'Fyodor Dostoievsky', 30.0);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Crime and Punishment', 'Fyodor Dostoievsky', 30.0, 8);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Crime and Punishment', 'Fyodor Dostoievsky', 30.0, 8);
 
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Hobbit', 'J.R.R. Tolkien', 25.0, 30);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Harry Potter and the Sorcerer''s Stone', 'J.K. Rowling', 28.0, 50);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Name of the Wind', 'Patrick Rothfuss', 32.0, 18);
 
-INSERT INTO tb_book (title, author, price) VALUES ('The Hobbit', 'J.R.R. Tolkien', 25.0);
-INSERT INTO tb_book (title, author, price) VALUES ('Harry Potter and the Sorcerer''s Stone', 'J.K. Rowling', 28.0);
-INSERT INTO tb_book (title, author, price) VALUES ('The Name of the Wind', 'Patrick Rothfuss', 32.0);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('It', 'Stephen King', 33.0, 20);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Frankenstein', 'Mary Shelley', 22.0, 14);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Dracula', 'Bram Stoker', 20.0, 17);
 
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 38.0, 40);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Guns, Germs, and Steel', 'Jared Diamond', 36.0, 11);
 
-INSERT INTO tb_book (title, author, price) VALUES ('It', 'Stephen King', 33.0);
-INSERT INTO tb_book (title, author, price) VALUES ('Frankenstein', 'Mary Shelley', 22.0);
-INSERT INTO tb_book (title, author, price) VALUES ('Dracula', 'Bram Stoker', 20.0);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Meditations', 'Marcus Aurelius', 17.0, 7);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Thus Spoke Zarathustra', 'Friedrich Nietzsche', 26.0, 6);
 
-INSERT INTO tb_book (title, author, price) VALUES ('Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 38.0);
-INSERT INTO tb_book (title, author, price) VALUES ('Guns, Germs, and Steel', 'Jared Diamond', 36.0);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Dune', 'Frank Herbert', 37.0, 28);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('1984', 'George Orwell', 23.0, 35);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Foundation', 'Isaac Asimov', 34.0, 16);
 
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Pride and Prejudice', 'Jane Austen', 22.0, 21);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Love in the Time of Cholera', 'Gabriel Garcia Marquez', 27.0, 13);
 
-INSERT INTO tb_book (title, author, price) VALUES ('Meditations', 'Marcus Aurelius', 17.0);
-INSERT INTO tb_book (title, author, price) VALUES ('Thus Spoke Zarathustra', 'Friedrich Nietzsche', 26.0);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Murder on the Orient Express', 'Agatha Christie', 24.0, 19);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Da Vinci Code', 'Dan Brown', 29.0, 26);
 
-INSERT INTO tb_book (title, author, price) VALUES ('Dune', 'Frank Herbert', 37.0); -- Science Fiction
-INSERT INTO tb_book (title, author, price) VALUES ('1984', 'George Orwell', 23.0); -- Science Fiction / Classic Literature
-INSERT INTO tb_book (title, author, price) VALUES ('Foundation', 'Isaac Asimov', 34.0); -- Science Fiction
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Steve Jobs', 'Walter Isaacson', 42.0, 24);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Diary of a Young Girl', 'Anne Frank', 19.0, 29);
 
-INSERT INTO tb_book (title, author, price) VALUES ('Pride and Prejudice', 'Jane Austen', 22.0); -- Romance / Classic Literature
-INSERT INTO tb_book (title, author, price) VALUES ('Love in the Time of Cholera', 'Gabriel Garcia Marquez', 27.0); -- Romance
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Waste Land and Other Poems', 'T.S. Eliot', 18.0, 4);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Leaves of Grass', 'Walt Whitman', 20.0, 3);
 
-INSERT INTO tb_book (title, author, price) VALUES ('Murder on the Orient Express', 'Agatha Christie', 24.0); -- Mystery
-INSERT INTO tb_book (title, author, price) VALUES ('The Da Vinci Code', 'Dan Brown', 29.0); -- Mystery / Thriller
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('To Kill a Mockingbird', 'Harper Lee', 25.0, 45);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Moby Dick', 'Herman Melville', 28.0, 10);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('War and Peace', 'Leo Tolstoy', 45.0, 7);
 
-INSERT INTO tb_book (title, author, price) VALUES ('Steve Jobs', 'Walter Isaacson', 42.0); -- Biography
-INSERT INTO tb_book (title, author, price) VALUES ('The Diary of a Young Girl', 'Anne Frank', 19.0); -- Biography / History
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Subtle Art of Not Giving a F*ck', 'Mark Manson', 21.0, 55);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Atomic Habits', 'James Clear', 26.0, 60);
 
-INSERT INTO tb_book (title, author, price) VALUES ('The Waste Land and Other Poems', 'T.S. Eliot', 18.0); -- Poetry
-INSERT INTO tb_book (title, author, price) VALUES ('Leaves of Grass', 'Walt Whitman', 20.0); -- Poetry
-
-INSERT INTO tb_book (title, author, price) VALUES ('To Kill a Mockingbird', 'Harper Lee', 25.0); -- Classic Literature
-INSERT INTO tb_book (title, author, price) VALUES ('Moby Dick', 'Herman Melville', 28.0); -- Classic Literature
-INSERT INTO tb_book (title, author, price) VALUES ('War and Peace', 'Leo Tolstoy', 45.0); -- Classic Literature
-
-INSERT INTO tb_book (title, author, price) VALUES ('The Subtle Art of Not Giving a F*ck', 'Mark Manson', 21.0); -- Self-Help
-INSERT INTO tb_book (title, author, price) VALUES ('Atomic Habits', 'James Clear', 26.0); -- Self-Help
-
-INSERT INTO tb_book (title, author, price) VALUES ('Where the Crawdads Sing', 'Delia Owens', 30.0); -- Contemporary
-INSERT INTO tb_book (title, author, price) VALUES ('The Silent Patient', 'Alex Michaelides', 29.0); -- Contemporary / Thriller
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('Where the Crawdads Sing', 'Delia Owens', 30.0, 33);
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Silent Patient', 'Alex Michaelides', 29.0, 27);ry / Thriller
 
 INSERT INTO tb_category (name) VALUES ('Science Fiction');
 INSERT INTO tb_category (name) VALUES ('Romance');

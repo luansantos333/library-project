@@ -75,4 +75,14 @@ public class BookController {
 
     }
 
+    @PatchMapping ("/{id}")
+    public ResponseEntity<BookCategoriesDTO> patchBook(@PathVariable(name = "id") Long id, @RequestParam(required = true, name = "amount") Integer amount) {
+
+        BookCategoriesDTO bookCategoriesDTO = service.increaseBookStock(id, amount);
+
+        return ResponseEntity.ok(bookCategoriesDTO);
+
+
+    }
+
 }
