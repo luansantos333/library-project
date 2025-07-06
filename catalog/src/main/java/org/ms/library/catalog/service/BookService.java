@@ -14,8 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -139,6 +141,15 @@ public class BookService {
         }
 
         bookRepository.deleteById(id);
+
+    }
+
+    @Transactional (readOnly = true)
+    public List<BookDTO> getBooksByListOfIds (List<Long> ids) {
+
+        List<Book> booksByListOfIds = bookRepository.findBooksByListOfIds(ids);
+
+        return booksByListOfIds.stream().map(BookDTO::new).collect(Collectors.toList());
 
     }
 }

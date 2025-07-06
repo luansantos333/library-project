@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -75,13 +76,22 @@ public class BookController {
 
     }
 
-    @PatchMapping ("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<BookCategoriesDTO> patchBook(@PathVariable(name = "id") Long id, @RequestParam(required = true, name = "amount") Integer amount) {
 
         BookCategoriesDTO bookCategoriesDTO = service.increaseBookStock(id, amount);
 
         return ResponseEntity.ok(bookCategoriesDTO);
 
+
+    }
+
+    @GetMapping("/by-ids")
+    public ResponseEntity<List<BookDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) List<Long> ids) {
+
+        List<BookDTO> booksByListOfIds = service.getBooksByListOfIds(ids);
+
+        return ResponseEntity.ok(booksByListOfIds);
 
     }
 

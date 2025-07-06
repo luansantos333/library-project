@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,6 +25,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             countQuery = "SELECT COUNT (DISTINCT b.id) FROM tb_book b JOIN b.categories c WHERE UPPER(b.title) LIKE (UPPER(CONCAT('%', :title, '%'))) " +
                     "AND (:author IS NULL OR UPPER(b.author) LIKE (UPPER(CONCAT('%', :author, '%')))) AND (:categories IS NULL OR c.name IN (:categories))" )
     Optional<Page<BookCategoriesProjection>> findAllBooksCategories(@Param("title") String title, @Param("author") String author, @Param ("categories") Set<String> categories, Pageable pageable);
+
+    @Query (value = "SELECT book FROM tb_book book WHERE book.id IN (:ids)")
+    List<Book> findBooksByListOfIds (@Param("ids") List<Long> ids);
 
 
 }
