@@ -17,17 +17,17 @@ public class Rental {
     @Column (nullable = false)
     private LocalDateTime rentalDate;
     @Column (nullable = false)
-    private UUID clientId;
+    private Long clientId;
     private LocalDateTime returnDate;
     @Column (nullable = false)
     private LocalDateTime dueDate;
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
-    @OneToMany
+    @OneToMany  (cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "rental")
     private Set<RentalItem> items = new HashSet<>();
 
 
-    public Rental(UUID id, LocalDateTime rentalDate, UUID clientId, LocalDateTime returnDate, LocalDateTime dueDate, RentalStatus status, Set<RentalItem> items) {
+    public Rental(UUID id, LocalDateTime rentalDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, RentalStatus status, Set<RentalItem> items) {
         this.id = id;
         this.rentalDate = rentalDate;
         this.clientId = clientId;
@@ -56,11 +56,11 @@ public class Rental {
         this.rentalDate = rentalDate;
     }
 
-    public UUID getClientId() {
+    public Long getClientId() {
         return clientId;
     }
 
-    public void setClientId(UUID clientId) {
+    public void setClientId(Long clientId) {
         this.clientId = clientId;
     }
 
@@ -105,10 +105,3 @@ public class Rental {
     }
 }
 
-enum RentalStatus {
-
-    ACTIVE,
-    RETURNED,
-    LATE
-
-}

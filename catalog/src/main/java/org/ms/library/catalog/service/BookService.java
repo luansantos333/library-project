@@ -145,11 +145,11 @@ public class BookService {
     }
 
     @Transactional (readOnly = true)
-    public List<BookDTO> getBooksByListOfIds (List<Long> ids) {
+    public Set<BookDTO> getBooksByListOfIds (Set<Long> ids) {
 
-        List<Book> booksByListOfIds = bookRepository.findBooksByListOfIds(ids);
+        Set<Book> booksByListOfIds = bookRepository.findBooksByListOfIds(ids);
 
-        return booksByListOfIds.stream().map(BookDTO::new).collect(Collectors.toList());
+        return booksByListOfIds.stream().map(BookDTO::new).collect(Collectors.toSet());
 
     }
 }

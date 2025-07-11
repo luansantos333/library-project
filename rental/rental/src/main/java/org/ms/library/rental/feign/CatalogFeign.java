@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Set;
 
 @FeignClient(name = "CATALOG-SERVICE", path = "/api/catalog/book")
 public interface CatalogFeign {
@@ -15,5 +16,5 @@ public interface CatalogFeign {
     ResponseEntity<BookDTO> findOneBook(@PathVariable(name = "id") Long id);
 
     @GetMapping("/by-ids")
-    ResponseEntity<List<BookDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) List<Long> ids);
+    ResponseEntity<Set<BookDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) Set<Long> ids);
 }

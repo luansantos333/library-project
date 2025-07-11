@@ -22,6 +22,9 @@ public class RentalItem {
         this.bookId = bookId;
     }
 
+
+
+
     public RentalItem() {
     }
 

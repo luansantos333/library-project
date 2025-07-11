@@ -87,9 +87,11 @@ public class BookController {
     }
 
     @GetMapping("/by-ids")
-    public ResponseEntity<List<BookDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) List<Long> ids) {
+    public ResponseEntity<Set<BookDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) Set<Long> ids) {
 
-        List<BookDTO> booksByListOfIds = service.getBooksByListOfIds(ids);
+        Set<BookDTO> booksByListOfIds = service.getBooksByListOfIds(ids);
+
+
 
         return ResponseEntity.ok(booksByListOfIds);
 
