@@ -20,8 +20,8 @@ public class ClientDTO {
 
     }
 
-
-
+    public ClientDTO() {
+    }
 
     public Long getId() {
         return id;

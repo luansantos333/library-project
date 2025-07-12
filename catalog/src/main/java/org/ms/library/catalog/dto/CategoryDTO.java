@@ -14,6 +14,9 @@ public class CategoryDTO {
 
     }
 
+    public CategoryDTO() {
+    }
+
     public Long getId() {
         return id;
     }

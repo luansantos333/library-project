@@ -1,5 +1,6 @@
 package org.ms.library.client.service;
 
+import org.apache.catalina.User;
 import org.ms.library.client.dto.*;
 import org.ms.library.client.entity.Address;
 import org.ms.library.client.entity.Client;
@@ -79,9 +80,8 @@ public class ClientService {
         Address address = new Address();
         UserDTO user = createUser(clientAddressUserDTO);
         copyDTOContentToEntity(clientAddressUserDTO, client, user, address);
-        client.setUser_id(user.getId());
         Client savedClient = clientRepository.save(client);
-        return new ClientAddressUserDTO(savedClient, user);
+        return new ClientAddressUserDTO(savedClient, new UserCompleteDTO(user.getUsername(), user.getPassword()));
 
     }
 
@@ -107,10 +107,10 @@ public class ClientService {
         address.setZip(clientDTO.getAddress().getZip());
         address.setAddress(clientDTO.getAddress().getAddress());
         address.setClient(entity);
-        Address save = addressRepository.save(address);
+        Address savedAddress = addressRepository.save(address);
         entity.setLastName(clientDTO.getLastName());
         entity.setPhone(clientDTO.getPhone());
-        entity.setAddress(save);
+        entity.setAddress(savedAddress);
         entity.setUser_id(userDTO.getId());
 
     }

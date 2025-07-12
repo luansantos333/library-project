@@ -1,5 +1,7 @@
 package org.ms.library.rental.service;
 
+import org.ms.library.rental.dto.ClientDTO;
+import org.ms.library.rental.dto.RentalBookClientDTO;
 import org.ms.library.rental.dto.RentalDTO;
 import org.ms.library.rental.dto.RentalItemDTO;
 import org.ms.library.rental.entities.Rental;
@@ -14,13 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Service
 public class RentalService {
-
     @Autowired
     private CatalogFeign catalogFeign;
+
     @Autowired
     private ClientFeign clientFeign;
     private final RentalRepository rentalRepository;
@@ -35,9 +39,30 @@ public class RentalService {
     public RentalDTO orderNewRental(RentalDTO rental) {
 
         Rental rentalEntity = new Rental();
+        clientFeign.findById(rental.getClientId());
         copyDTOToEntity(rental, rentalEntity);
         rentalRepository.save(rentalEntity);
         return new RentalDTO(rentalEntity);
+
+    }
+
+
+    @Transactional(readOnly = true)
+    public RentalBookClientDTO getRentalInfoByClientId(Long clientId) {
+
+        ClientDTO clientFoundByID = clientFeign.findById(clientId).getBody();
+
+        if (clientFoundByID != null) {
+
+            List<Rental> rentalsByClientId = rentalRepository.findRentalsByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
+
+
+            return new RentalBookClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(),
+                    clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId);
+
+        }
+
+        return null;
 
     }
 

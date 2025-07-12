@@ -1,6 +1,6 @@
 package org.ms.library.user.service.exceptions;
 
-public class ForbbidenException extends Throwable {
+public class ForbbidenException extends RuntimeException {
 
 
     public ForbbidenException() {

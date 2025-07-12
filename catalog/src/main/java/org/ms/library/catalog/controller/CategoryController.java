@@ -17,8 +17,11 @@ public class CategoryController {
     // This class will handle HTTP requests related to categories.
     // It will use the CategoryService to perform operations like creating, updating, deleting, and retrieving categories.
     // The methods will return appropriate responses based on the operations performed.
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     // Get all categories
     @GetMapping

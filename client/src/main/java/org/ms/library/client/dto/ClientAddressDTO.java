@@ -23,6 +23,8 @@ public ClientAddressDTO (Client entity) {
 
 }
 
+    public ClientAddressDTO() {
+    }
 
     public Long getId() {
         return id;

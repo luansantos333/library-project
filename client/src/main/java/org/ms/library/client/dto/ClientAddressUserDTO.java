@@ -2,7 +2,7 @@ package org.ms.library.client.dto;
 
 import org.ms.library.client.entity.Client;
 
-public class ClientUserDTO {
+public class ClientAddressUserDTO {
 
     private Long id;
     private String name;
@@ -12,7 +12,7 @@ public class ClientUserDTO {
     private AddressDTO address;
     private UserCompleteDTO user;
 
-    public ClientUserDTO(Client entity, UserCompleteDTO user) {
+    public ClientAddressUserDTO(Client entity, UserCompleteDTO user) {
 
         this.id = entity.getId();
         this.name = entity.getName();
@@ -24,6 +24,8 @@ public class ClientUserDTO {
 
     }
 
+    public ClientAddressUserDTO() {
+    }
 
     public Long getId() {
         return id;

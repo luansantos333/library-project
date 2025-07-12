@@ -51,7 +51,7 @@ INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Subtle Art of 
 INSERT INTO tb_book (title, author, price, quantity) VALUES ('Atomic Habits', 'James Clear', 26.0, 60);
 
 INSERT INTO tb_book (title, author, price, quantity) VALUES ('Where the Crawdads Sing', 'Delia Owens', 30.0, 33);
-INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Silent Patient', 'Alex Michaelides', 29.0, 27);ry / Thriller
+INSERT INTO tb_book (title, author, price, quantity) VALUES ('The Silent Patient', 'Alex Michaelides', 29.0, 27);
 
 INSERT INTO tb_category (name) VALUES ('Science Fiction');
 INSERT INTO tb_category (name) VALUES ('Romance');
@@ -77,10 +77,7 @@ INSERT INTO tb_book_category (book_id, category_id) VALUES (9, 5);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (9, 11);
 
 INSERT INTO tb_book_category (book_id, category_id) VALUES (10, 5); -- Crime
- Crime and Pun
 INSERT INTO tb_book_category (book_id, category_id) VALUES (11, 5); -- Crime and Punishment (2nd) ->
-
-
 
 INSERT INTO tb_book_category (book_id, category_id) VALUES (12, 1); -- The Hobbit -> Fantasy
 
@@ -135,7 +132,5 @@ INSERT INTO tb_book_category (book_id, category_id) VALUES (35, 3);
 
 INSERT INTO tb_book_category (book_id, category_id) VALUES (38, 8);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (38, 7);
-
-=
 INSERT INTO tb_book_category (book_id, category_id) VALUES (39, 4);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (39, 8);
