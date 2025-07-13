@@ -5,7 +5,7 @@ import org.ms.library.rental.entities.Rental;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RentalBookClientDTO {
+public class RentalsBookClientDTO {
 
     private String clientName;
     private String clientLastName;
@@ -15,7 +15,7 @@ public class RentalBookClientDTO {
     private Long total;
 
 
-    public RentalBookClientDTO(String clientName, String clientLastName, String clientCpf, String clientPhone, List<Rental> entity) {
+    public RentalsBookClientDTO(String clientName, String clientLastName, String clientCpf, String clientPhone, List<Rental> entity) {
         this.clientName = clientName;
         this.clientLastName = clientLastName;
         ClientCpf = clientCpf;
@@ -30,7 +30,7 @@ public class RentalBookClientDTO {
     }
 
 
-    public RentalBookClientDTO() {
+    public RentalsBookClientDTO() {
     }
 
     public String getClientName() {

@@ -1,7 +1,7 @@
 package org.ms.library.rental.service;
 
 import org.ms.library.rental.dto.ClientDTO;
-import org.ms.library.rental.dto.RentalBookClientDTO;
+import org.ms.library.rental.dto.RentalsBookClientDTO;
 import org.ms.library.rental.dto.RentalDTO;
 import org.ms.library.rental.dto.RentalItemDTO;
 import org.ms.library.rental.entities.Rental;
@@ -48,7 +48,7 @@ public class RentalService {
 
 
     @Transactional(readOnly = true)
-    public RentalBookClientDTO getRentalInfoByClientId(Long clientId) {
+    public RentalsBookClientDTO getRentalInfoByClientId(Long clientId) {
 
         ClientDTO clientFoundByID = clientFeign.findById(clientId).getBody();
 
@@ -57,7 +57,7 @@ public class RentalService {
             List<Rental> rentalsByClientId = rentalRepository.findRentalsByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
 
 
-            return new RentalBookClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(),
+            return new RentalsBookClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(),
                     clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId);
 
         }
@@ -78,10 +78,7 @@ public class RentalService {
         for (RentalItemDTO item : dto.getItems()) {
 
             RentalItem rentalItem = new RentalItem();
-
-            rentalItem.setRental(entity);
             rentalItem.setBookId(item.getBookId());
-            rentalItemRepository.save(rentalItem);
             rentalItemSet.add(rentalItem);
         }
 

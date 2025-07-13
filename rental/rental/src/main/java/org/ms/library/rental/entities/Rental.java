@@ -23,7 +23,7 @@ public class Rental {
     private LocalDateTime dueDate;
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
-    @OneToMany  (cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "rental")
+    @OneToMany  (cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RentalItem> items = new HashSet<>();
 
 
