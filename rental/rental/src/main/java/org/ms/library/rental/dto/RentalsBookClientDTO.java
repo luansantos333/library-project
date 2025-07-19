@@ -4,6 +4,7 @@ import org.ms.library.rental.entities.Rental;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RentalsBookClientDTO {
 
@@ -12,18 +13,19 @@ public class RentalsBookClientDTO {
     private String ClientCpf;
     private String clientPhone;
     private List<RentalDTO> rentals = new ArrayList<>();
-    private Long total;
+    private Double total;
 
 
-    public RentalsBookClientDTO(String clientName, String clientLastName, String clientCpf, String clientPhone, List<Rental> entity) {
+    public RentalsBookClientDTO(String clientName, String clientLastName, String clientCpf, String clientPhone, List<Rental> entity, Map<Long, BookDTO> bookDetailsMap) {
         this.clientName = clientName;
         this.clientLastName = clientLastName;
-        ClientCpf = clientCpf;
+        this.ClientCpf = clientCpf;
         this.clientPhone = clientPhone;
+        this.total = 0.0;
         for (Rental rental : entity) {
-
-
-            this.rentals.add(new RentalDTO(rental));
+            RentalDTO rentalDTO = new RentalDTO(rental, bookDetailsMap);
+            this.rentals.add(rentalDTO);
+            this.total += rentalDTO.getTotal();
         }
 
 
@@ -53,7 +55,7 @@ public class RentalsBookClientDTO {
         return rentals;
     }
 
-    public Long getTotal() {
+    public Double getTotal() {
         return total;
     }
 }

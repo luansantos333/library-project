@@ -6,6 +6,7 @@ import org.ms.library.rental.entities.RentalItem;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,22 +17,23 @@ public class RentalDTO {
     private Long clientId;
     private LocalDateTime dueDate;
     private Set<RentalItemDTO> items = new HashSet<>();
+    private Double total;
 
-    public RentalDTO(Rental entity) {
+    public RentalDTO(Rental entity, Map<Long, BookDTO> bookDetailsMap) {
 
         this.id = entity.getId();
         this.rentalDate = entity.getRentalDate();
         this.clientId = entity.getClientId();
         this.dueDate = entity.getDueDate();
+        this.total = 0.0;
 
         for (RentalItem item : entity.getItems()) {
-
-            items.add(new RentalItemDTO(item));
-
-
+            BookDTO bookDetails = bookDetailsMap.get(item.getBookId());
+            if (bookDetails != null) {
+                items.add(new RentalItemDTO(item, bookDetails));
+                this.total += bookDetails.getPrice();
+            }
         }
-
-
     }
 
 
@@ -56,5 +58,9 @@ public class RentalDTO {
 
     public Set<RentalItemDTO> getItems() {
         return items;
+    }
+
+    public Double getTotal() {
+        return total;
     }
 }
