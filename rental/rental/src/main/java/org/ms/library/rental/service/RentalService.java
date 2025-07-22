@@ -99,9 +99,11 @@ public class RentalService {
 
             RentalItem rentalItem = new RentalItem();
             rentalItem.setBookId(item.getBookId());
+            rentalItem.setPrice(catalogFeign.findOneBook(item.getBookId()).getBody().getPrice());
             rentalItemSet.add(rentalItem);
         }
 
+        entity.setTotal(rentalItemSet.stream().mapToDouble(x -> x.getPrice()).sum());
         entity.getItems().addAll(rentalItemSet);
 
 

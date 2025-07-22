@@ -25,6 +25,9 @@ public class Rental {
     private RentalStatus status;
     @OneToMany  (cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RentalItem> items = new HashSet<>();
+    private Double total;
+
+
 
 
     public Rental(UUID id, LocalDateTime rentalDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, RentalStatus status, Set<RentalItem> items) {
@@ -37,7 +40,27 @@ public class Rental {
         this.items = items;
     }
 
+
+    public Rental(UUID id, LocalDateTime rentalDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, RentalStatus status, Set<RentalItem> items, Double total) {
+        this.id = id;
+        this.rentalDate = rentalDate;
+        this.clientId = clientId;
+        this.returnDate = returnDate;
+        this.dueDate = dueDate;
+        this.status = status;
+        this.items = items;
+        this.total = total;
+    }
+
     public Rental() {
+    }
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
     }
 
     public UUID getId() {

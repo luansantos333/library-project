@@ -11,6 +11,7 @@ public class RentalItem {
     private Long id;
     @Column(nullable = false)
     private Long bookId;
+    private Double price;
 
     public RentalItem(Long id, Rental rental, Long bookId) {
         this.id = id;
@@ -21,6 +22,20 @@ public class RentalItem {
     public RentalItem() {
     }
 
+    public RentalItem(Long id, Long bookId, Double price) {
+        this.id = id;
+        this.bookId = bookId;
+        this.price = price;
+    }
+
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 
     public Long getId() {
         return id;
@@ -38,7 +53,6 @@ public class RentalItem {
     public void setBookId(Long bookId) {
         this.bookId = bookId;
     }
-
 
     @Override
     public boolean equals(Object o) {
