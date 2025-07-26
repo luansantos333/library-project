@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,9 +41,9 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public BookDTO getBookById(Long id) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> new NoBookFoundException("No book found with id: " + id));
-        return new BookDTO(book);
+    public BookCategoriesDTO getBookCategoriesByBookID(Long id) {
+        Book book = bookRepository.findBookCategoriesByBookID(id).orElseThrow(() -> new NoBookFoundException("No book found with id: " + id));
+        return new BookCategoriesDTO(book);
 
     }
 
@@ -68,7 +67,7 @@ public class BookService {
 
 
     @Transactional
-    public BookCategoriesDTO updateBook(Long id, BookCategoriesDTO bookDTO) {
+    public BookCategoriesDTO updateBookCategories(Long id, BookCategoriesDTO bookDTO) {
 
         if (!bookRepository.existsById(id)) {
 
@@ -97,17 +96,29 @@ public class BookService {
 
 
     @Transactional
-    public BookCategoriesDTO increaseBookStock(Long id, Integer amount) {
+    public BookCategoriesDTO changeStockAmount(Long id, Integer amount, String operation) {
 
         if (!bookRepository.existsById(id)) {
-
-
             throw new NoBookFoundException("No book found with this id: " + id);
 
         }
 
         Book referenceById = bookRepository.getReferenceById(id);
-        referenceById.setQuantity(referenceById.getQuantity() + amount);
+
+
+        if (operation.equalsIgnoreCase("INCREASE")) {
+
+            referenceById.setQuantity(referenceById.getQuantity() + amount);
+        } else if (operation.equalsIgnoreCase("DECREASE")) {
+
+            referenceById.setQuantity(referenceById.getQuantity() - amount);
+
+        } else {
+
+
+            throw new IllegalArgumentException("Invalid operation!");
+
+        }
 
         return new BookCategoriesDTO(bookRepository.save(referenceById));
 
@@ -145,11 +156,11 @@ public class BookService {
     }
 
     @Transactional (readOnly = true)
-    public Set<BookDTO> getBooksByListOfIds (Set<Long> ids) {
+    public Set<BookCategoriesDTO> getBooksByListOfIds (Set<Long> ids) {
 
-        Set<Book> booksByListOfIds = bookRepository.findBooksByListOfIds(ids);
+        Set<Book> booksByListOfIds = bookRepository.findBooksCategoriesByListOfIds(ids);
 
-        return booksByListOfIds.stream().map(BookDTO::new).collect(Collectors.toSet());
+        return booksByListOfIds.stream().map(BookCategoriesDTO::new).collect(Collectors.toSet());
 
     }
 }

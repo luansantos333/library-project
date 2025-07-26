@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -44,9 +43,9 @@ public class BookController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDTO> findOneBook(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<BookCategoriesDTO> findOneBook(@PathVariable(name = "id") Long id) {
 
-        BookDTO bookById = service.getBookById(id);
+        BookCategoriesDTO bookById = service.getBookCategoriesByBookID(id);
 
         return ResponseEntity.ok(bookById);
     }
@@ -60,13 +59,16 @@ public class BookController {
 
     }
 
+    /*
     @PutMapping("/{id}")
     public ResponseEntity<BookCategoriesDTO> updateBook(@PathVariable(name = "id") Long id, @RequestBody BookCategoriesDTO bookDTO) {
 
-        BookCategoriesDTO bookCategoriesDTO = service.updateBook(id, bookDTO);
+        BookCategoriesDTO bookCategoriesDTO = service.updateBookCategories(id, bookDTO);
         return ResponseEntity.ok(bookCategoriesDTO);
 
     }
+
+     */
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable(name = "id") Long id) {
@@ -76,10 +78,10 @@ public class BookController {
 
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<BookCategoriesDTO> patchBook(@PathVariable(name = "id") Long id, @RequestParam(required = true, name = "amount") Integer amount) {
+    @PutMapping("/stock/{id}")
+    public ResponseEntity<BookCategoriesDTO> changeStockQuantity(@PathVariable(name = "id") Long id, @RequestParam(required = true, name = "amount") Integer amount, @RequestParam (required = true, name = "operation", defaultValue = "increase") String operation) {
 
-        BookCategoriesDTO bookCategoriesDTO = service.increaseBookStock(id, amount);
+        BookCategoriesDTO bookCategoriesDTO = service.changeStockAmount(id, amount, operation);
 
         return ResponseEntity.ok(bookCategoriesDTO);
 
@@ -87,11 +89,9 @@ public class BookController {
     }
 
     @GetMapping("/by-ids")
-    public ResponseEntity<Set<BookDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) Set<Long> ids) {
+    public ResponseEntity<Set<BookCategoriesDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) Set<Long> ids) {
 
-        Set<BookDTO> booksByListOfIds = service.getBooksByListOfIds(ids);
-
-
+        Set<BookCategoriesDTO> booksByListOfIds = service.getBooksByListOfIds(ids);
 
         return ResponseEntity.ok(booksByListOfIds);
 

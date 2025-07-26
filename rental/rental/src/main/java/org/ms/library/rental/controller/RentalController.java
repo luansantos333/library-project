@@ -1,7 +1,8 @@
 package org.ms.library.rental.controller;
 
+import jakarta.validation.Valid;
 import org.ms.library.rental.dto.RentalDTO;
-import org.ms.library.rental.dto.RentalsBookClientDTO;
+import org.ms.library.rental.dto.RentalsBookCategoriesClientDTO;
 import org.ms.library.rental.service.RentalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +22,15 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RentalsBookClientDTO> getRentalsByClientId(@PathVariable (name = "id") String id) {
+    public ResponseEntity<RentalsBookCategoriesClientDTO> getRentalsByClientId(@PathVariable (name = "id") String id) {
 
-        RentalsBookClientDTO rentalInfoByClientId = rentalService.getRentalInfoByClientId(Long.parseLong(id));
+        RentalsBookCategoriesClientDTO rentalInfoByClientId = rentalService.getRentalInfoByClientId(Long.parseLong(id));
         return ResponseEntity.ok(rentalInfoByClientId);
 
     }
 
     @PostMapping
-    public ResponseEntity<RentalDTO> newRental(@RequestBody RentalDTO rental) {
+    public ResponseEntity<RentalDTO> createRental (@Valid @RequestBody RentalDTO rental) {
 
         RentalDTO rentalDTO = rentalService.orderNewRental(rental);
         HttpStatus status = HttpStatus.CREATED;

@@ -8,12 +8,14 @@ public class RentalItemDTO {
     private String title;
     private String author;
     private Double price;
+    private Integer quantity;
 
-    public RentalItemDTO(RentalItem rentalItem, BookDTO bookDetails) {
+    public RentalItemDTO(RentalItem rentalItem, BookCategoriesDTO bookDetails) {
         this.bookId = rentalItem.getBookId();
         this.title = bookDetails.getTitle();
         this.author = bookDetails.getAuthor();
         this.price = bookDetails.getPrice();
+        this.quantity = rentalItem.getQuantity();
     }
 
 
@@ -34,5 +36,9 @@ public class RentalItemDTO {
 
     public Double getPrice() {
         return price;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
     }
 }

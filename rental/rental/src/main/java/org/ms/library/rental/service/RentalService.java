@@ -9,6 +9,7 @@ import org.ms.library.rental.feign.ClientFeign;
 import org.ms.library.rental.repository.RentalItemRepository;
 import org.ms.library.rental.repository.RentalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,13 +35,25 @@ public class RentalService {
     public RentalDTO orderNewRental(RentalDTO rental) {
 
         Rental rentalEntity = new Rental();
-        clientFeign.findById(rental.getClientId());
+        ResponseEntity<ClientDTO> clientFeignById = clientFeign.findById(rental.getClientId());
+
+        if (clientFeignById.getBody().getId() == null) {
+
+            throw new NoSuchElementException("Client not found");
+
+        }
+
         copyDTOToEntity(rental, rentalEntity);
-        Map<Long, BookDTO> bookDetailsMap = new HashMap<>();
+        Map<Long, BookCategoriesDTO> bookDetailsMap = new HashMap<>();
 
-        Set<BookDTO> body = catalogFeign.findBooksByIds(rental.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
+        Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(rental.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
+        for (BookCategoriesDTO book : body) {
 
-        for (BookDTO book : body) {
+            for (RentalItemDTO rentalItemDTO : rental.getItems()) {
+
+                catalogFeign.changeStockQuantity(book.getId(), rentalItemDTO.getQuantity(), "DECREASE" );
+
+            }
 
             bookDetailsMap.put(book.getId(), book);
 
@@ -54,7 +67,7 @@ public class RentalService {
 
 
     @Transactional(readOnly = true)
-    public RentalsBookClientDTO getRentalInfoByClientId(Long clientId) {
+    public RentalsBookCategoriesClientDTO getRentalInfoByClientId(Long clientId) {
 
         ClientDTO clientFoundByID = clientFeign.findById(clientId).getBody();
 
@@ -62,13 +75,13 @@ public class RentalService {
 
             List<Rental> rentalsByClientId = rentalRepository.findRentalsByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
 
-            Map<Long, BookDTO> bookDTOMap = new HashMap<>();
+            Map<Long, BookCategoriesDTO> bookDTOMap = new HashMap<>();
 
             for (Rental rental : rentalsByClientId) {
 
-                Set<BookDTO> body = catalogFeign.findBooksByIds(rental.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
+                Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(rental.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
 
-                for (BookDTO book : body) {
+                for (BookCategoriesDTO book : body) {
 
                     bookDTOMap.put(book.getId(), book);
 
@@ -76,7 +89,7 @@ public class RentalService {
 
             }
 
-            return new RentalsBookClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId,
+            return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId,
                    bookDTOMap);
 
 
@@ -100,6 +113,7 @@ public class RentalService {
             RentalItem rentalItem = new RentalItem();
             rentalItem.setBookId(item.getBookId());
             rentalItem.setPrice(catalogFeign.findOneBook(item.getBookId()).getBody().getPrice());
+            rentalItem.setQuantity(item.getQuantity());
             rentalItemSet.add(rentalItem);
         }
 

@@ -12,12 +12,18 @@ public class RentalItem {
     @Column(nullable = false)
     private Long bookId;
     private Double price;
+    private Integer quantity;
 
     public RentalItem(Long id, Rental rental, Long bookId) {
         this.id = id;
         this.bookId = bookId;
     }
 
+    public RentalItem(Long bookId, Double price, Integer quantity) {
+        this.bookId = bookId;
+        this.price = price;
+        this.quantity = quantity;
+    }
 
     public RentalItem() {
     }
@@ -28,6 +34,14 @@ public class RentalItem {
         this.price = price;
     }
 
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public Double getPrice() {
         return price;

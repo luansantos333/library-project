@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RentalsBookClientDTO {
+public class RentalsBookCategoriesClientDTO {
 
     private String clientName;
     private String clientLastName;
@@ -16,7 +16,7 @@ public class RentalsBookClientDTO {
     private Double total;
 
 
-    public RentalsBookClientDTO(String clientName, String clientLastName, String clientCpf, String clientPhone, List<Rental> entity, Map<Long, BookDTO> bookDetailsMap) {
+    public RentalsBookCategoriesClientDTO(String clientName, String clientLastName, String clientCpf, String clientPhone, List<Rental> entity, Map<Long, BookCategoriesDTO> bookDetailsMap) {
         this.clientName = clientName;
         this.clientLastName = clientLastName;
         this.ClientCpf = clientCpf;
@@ -32,7 +32,7 @@ public class RentalsBookClientDTO {
     }
 
 
-    public RentalsBookClientDTO() {
+    public RentalsBookCategoriesClientDTO() {
     }
 
     public String getClientName() {
