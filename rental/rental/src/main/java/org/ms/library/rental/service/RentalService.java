@@ -48,18 +48,14 @@ public class RentalService {
 
         Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(rental.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
         for (BookCategoriesDTO book : body) {
-
-            for (RentalItemDTO rentalItemDTO : rental.getItems()) {
-
-                catalogFeign.changeStockQuantity(book.getId(), rentalItemDTO.getQuantity(), "DECREASE" );
-
-            }
-
             bookDetailsMap.put(book.getId(), book);
-
-
         }
 
+        for (RentalItemDTO rentalItemDTO : rental.getItems()) {
+
+            catalogFeign.changeStockQuantity(rentalItemDTO.getBookId(), rentalItemDTO.getQuantity(), "DECREASE");
+
+        }
         rentalRepository.save(rentalEntity);
         return new RentalDTO(rentalEntity, bookDetailsMap);
 
@@ -89,8 +85,7 @@ public class RentalService {
 
             }
 
-            return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId,
-                   bookDTOMap);
+            return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId, bookDTOMap);
 
 
         }
