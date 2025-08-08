@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,6 +94,41 @@ public class RentalService {
         return null;
 
     }
+
+
+    @Transactional
+    public void returnBooks (UUID rentalId, Long clientId) throws Exception {
+
+
+
+        Rental rental = rentalRepository.findRentalById(rentalId).orElseThrow(() -> new NoSuchElementException("Rental not found"));
+
+
+        if (rental.getClientId().equals(clientId)) {
+
+
+            rental.setReturnDate(LocalDateTime.now());
+            rental.setStatus(RentalStatus.RETURNED);
+            Rental updatedEntity = rentalRepository.save(rental);
+
+            for (RentalItem rentedItem : updatedEntity.getItems()) {
+
+
+                catalogFeign.changeStockQuantity(rentedItem.getBookId(), rentedItem.getQuantity(), "INCREASE");
+
+
+            }
+
+        } else {
+
+
+            throw new Exception("A error occurred, please check the data and try it again!");
+
+        }
+
+
+    }
+
 
 
     private void copyDTOToEntity(RentalDTO dto, Rental entity) {

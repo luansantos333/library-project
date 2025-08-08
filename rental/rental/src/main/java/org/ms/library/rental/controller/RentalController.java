@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/rental")
@@ -36,6 +37,25 @@ public class RentalController {
         HttpStatus status = HttpStatus.CREATED;
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(rentalDTO.getClientId()).toUri();
         return ResponseEntity.created(location).body(rentalDTO);
+
+    }
+
+    @PutMapping("/return/{id}/{clientId}")
+    public ResponseEntity<Void>  returnBook (@PathVariable (name = "id") UUID rentalId,  @PathVariable (name = "clientId") Long clientId) {
+
+        try {
+
+            rentalService.returnBooks(rentalId, clientId);
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+
+        }
+
+        return ResponseEntity.noContent().build();
+
 
     }
 

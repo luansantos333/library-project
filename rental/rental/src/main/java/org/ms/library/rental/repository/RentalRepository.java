@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Long> {
@@ -16,6 +17,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Query (value = "SELECT r FROM tb_rental r WHERE r.clientId = :clientId")
     Optional<List<Rental>> findRentalsByClientId (@Param("clientId") Long clientId);
 
-
+    @Query
+    Optional<Rental> findRentalById(@Param("clientId") UUID id);
 
 }
