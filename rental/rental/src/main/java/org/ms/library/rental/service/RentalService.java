@@ -135,7 +135,20 @@ public class RentalService {
 
         entity.setClientId(dto.getClientId());
         entity.setRentalDate(dto.getRentalDate());
-        entity.setDueDate(dto.getDueDate());
+
+        if (dto.getDueDate() == null || dto.getDueDate().toString().isBlank()) {
+
+            entity.setDueDate(dto.getRentalDate().plusDays(30L));
+
+        } else {
+
+            entity.setDueDate(dto.getDueDate());
+
+        }
+
+
+
+
         entity.setStatus(RentalStatus.ACTIVE);
         Set<RentalItem> rentalItemSet = new HashSet<>();
 

@@ -8,26 +8,24 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity (name = "tb_rental")
+@Entity(name = "tb_rental")
 public class Rental {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column (nullable = false)
+    @Column(nullable = false)
     private LocalDateTime rentalDate;
-    @Column (nullable = false)
+    @Column(nullable = false)
     private Long clientId;
     private LocalDateTime returnDate;
-    @Column (nullable = false)
+    @Column(nullable = false)
     private LocalDateTime dueDate;
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
-    @OneToMany  (cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RentalItem> items = new HashSet<>();
     private Double total;
-
-
 
 
     public Rental(UUID id, LocalDateTime rentalDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, RentalStatus status, Set<RentalItem> items) {
@@ -46,7 +44,7 @@ public class Rental {
         this.rentalDate = rentalDate;
         this.clientId = clientId;
         this.returnDate = returnDate;
-        this.dueDate = dueDate;
+        this.dueDate =  dueDate;
         this.status = status;
         this.items = items;
         this.total = total;
