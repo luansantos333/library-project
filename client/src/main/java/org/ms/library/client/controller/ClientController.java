@@ -1,5 +1,6 @@
 package org.ms.library.client.controller;
 
+import jakarta.validation.Valid;
 import org.ms.library.client.dto.ClientAddressDTO;
 import org.ms.library.client.dto.ClientAddressUserDTO;
 import org.ms.library.client.dto.ClientDTO;
@@ -67,7 +68,7 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<ClientDTO> createClientAndUser(@RequestBody ClientAddressUserDTO clientDTO) {
+    public ResponseEntity<ClientDTO> createClientAndUser(@Valid @RequestBody ClientAddressUserDTO clientDTO) {
 
         ClientAddressUserDTO clientAddress = clientService.createClientAddress(clientDTO);
         HttpStatus status = HttpStatus.CREATED;

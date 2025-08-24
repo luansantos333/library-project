@@ -1,5 +1,6 @@
 package org.ms.library.user.controller;
 
+import jakarta.validation.Valid;
 import org.ms.library.user.dto.UserDTO;
 import org.ms.library.user.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
 
         UserDTO user = userService.createUser(userDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{UUID}").buildAndExpand(userDTO.getId()).toUri();

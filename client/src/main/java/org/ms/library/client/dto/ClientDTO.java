@@ -1,6 +1,9 @@
 package org.ms.library.client.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.ms.library.client.entity.Client;
+import org.ms.library.client.utils.ValidCPF;
 
 public class ClientDTO {
     private Long id;

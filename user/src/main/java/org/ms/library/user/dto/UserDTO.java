@@ -1,5 +1,8 @@
 package org.ms.library.user.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import org.ms.library.user.entity.Role;
 import org.ms.library.user.entity.User;
 
@@ -10,8 +13,10 @@ import java.util.UUID;
 public class UserDTO {
 
     private UUID id;
+    @Email (message = "The username needs to be a valid email address")
     private String username;
     private Set<RoleDTO> roles = new HashSet<>();
+   @Size(min = 8, max = 30, message = "The password need to have between 8 and 30 characters")
     private String password;
 
 
