@@ -1,10 +1,12 @@
 package org.ms.library.user.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import org.ms.library.user.entity.Role;
 
 public class RoleDTO {
 
     private Long id;
+    @NotBlank (message = "You need to enter your role name!")
     private String name;
     private String description;
 

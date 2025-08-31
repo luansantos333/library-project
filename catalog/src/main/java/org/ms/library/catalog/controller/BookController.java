@@ -1,5 +1,6 @@
 package org.ms.library.catalog.controller;
 
+import jakarta.validation.Valid;
 import org.ms.library.catalog.dto.BookCategoriesDTO;
 import org.ms.library.catalog.dto.BookDTO;
 import org.ms.library.catalog.repository.projection.BookCategoriesProjection;
@@ -51,7 +52,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookCategoriesDTO> saveBook(@RequestBody BookCategoriesDTO bookDTO) {
+    public ResponseEntity<BookCategoriesDTO> saveBook(@Valid @RequestBody BookCategoriesDTO bookDTO) {
 
         BookCategoriesDTO book = service.createBook(bookDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(bookDTO.getId()).toUri();
@@ -79,7 +80,7 @@ public class BookController {
     }
 
     @PutMapping("/stock/{id}")
-    public ResponseEntity<BookCategoriesDTO> changeStockQuantity(@PathVariable(name = "id") Long id, @RequestParam(required = true, name = "amount") Integer amount, @RequestParam (required = true, name = "operation", defaultValue = "increase") String operation) {
+    public ResponseEntity<BookCategoriesDTO> changeStockQuantity(@PathVariable(name = "id") Long id,  @RequestParam(required = true, name = "amount") Integer amount, @RequestParam (required = true, name = "operation", defaultValue = "increase") String operation) {
 
         BookCategoriesDTO bookCategoriesDTO = service.changeStockAmount(id, amount, operation);
 

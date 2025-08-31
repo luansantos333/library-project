@@ -1,5 +1,7 @@
 package org.ms.library.catalog.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.ms.library.catalog.entity.Book;
 import org.ms.library.catalog.entity.Category;
 
@@ -7,14 +9,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BookCategoriesDTO {
-
     private Long id;
+    @NotBlank
     private String title;
+    @NotBlank (message = "You cannot leave this field empty")
     private String author;
+    @PositiveOrZero(message = "You cannot enter a number lower than 0")
+    @NotBlank (message = "You cannot leave this field empty")
     private Double price;
     private Set<CategoryDTO> categories = new HashSet<>();
     private Set<Long> categories_ids = new HashSet<>();
+    @PositiveOrZero (message = "You cannot enter a number lower than 0")
+    @NotBlank (message = "You cannot leave this field empty")
     private Integer quantity;
+
 
     public BookCategoriesDTO(Book book) {
         this.id = book.getId();

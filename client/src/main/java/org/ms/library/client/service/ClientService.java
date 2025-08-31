@@ -1,6 +1,5 @@
 package org.ms.library.client.service;
 
-import org.apache.catalina.User;
 import org.ms.library.client.dto.*;
 import org.ms.library.client.entity.Address;
 import org.ms.library.client.entity.Client;
@@ -9,7 +8,6 @@ import org.ms.library.client.repository.AddressRepository;
 import org.ms.library.client.repository.ClientRepository;
 import org.ms.library.client.repository.projections.ClientAddressProjection;
 import org.ms.library.client.service.exceptions.ClientNotFoundException;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +72,8 @@ public class ClientService {
 
 
     @Transactional
-    public ClientAddressUserDTO createClientAddress(ClientAddressUserDTO clientAddressUserDTO) {
+    public ClientAddressUserDTO createClientAddress(ClientAddressUserDTO clientAddressUserDTO) throws Exception {
+
 
         Client client = new Client();
         Address address = new Address();
@@ -100,16 +99,16 @@ public class ClientService {
     private void copyDTOContentToEntity (ClientAddressUserDTO clientDTO,  Client entity, UserDTO userDTO, Address address) {
 
         entity.setName(clientDTO.getName());
-        entity.setCpf(clientDTO.getCpf());
+        entity.setCpf( clientDTO.getCpf().replaceAll("\\D", ""));
         address.setCity(clientDTO.getAddress().getCity());
         address.setState(clientDTO.getAddress().getState());
         address.setCountry(clientDTO.getAddress().getCountry());
-        address.setZip(clientDTO.getAddress().getZip());
+        address.setZip(clientDTO.getAddress().getZip().replaceAll("\\D", ""));
         address.setAddress(clientDTO.getAddress().getAddress());
         address.setClient(entity);
         Address savedAddress = addressRepository.save(address);
         entity.setLastName(clientDTO.getLastName());
-        entity.setPhone(clientDTO.getPhone());
+        entity.setPhone(clientDTO.getPhone().replaceAll("\\D", ""));
         entity.setAddress(savedAddress);
         entity.setUser_id(userDTO.getId());
 

@@ -1,17 +1,21 @@
 package org.ms.library.client.dto;
 
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 import org.ms.library.client.entity.Address;
-
-import java.util.UUID;
+import org.ms.library.client.utils.ValidCEP;
 
 public class AddressDTO {
 
     private Long id;
+    @NotBlank (message = "You cannot leave this field empty!")
     private String address;
+    @NotBlank (message = "You cannot leave this field empty!")
     private String city;
+    @NotBlank (message = "You cannot leave this field empty!")
     private String state;
+    @ValidCEP
     private String zip;
+    @NotBlank (message = "You cannot leave this field empty!")
     private String country;
 
     public AddressDTO(Address entity) {

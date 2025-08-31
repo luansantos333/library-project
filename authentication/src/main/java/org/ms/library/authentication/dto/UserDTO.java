@@ -1,5 +1,7 @@
 package org.ms.library.authentication.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import org.ms.library.authentication.entity.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -8,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class UserDTO {
+
 
     private String username;
     private Set<RoleDTO> roles = new HashSet<>();

@@ -8,7 +8,6 @@ import org.ms.library.client.repository.projections.ClientAddressProjection;
 import org.ms.library.client.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,7 +67,7 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<ClientDTO> createClientAndUser(@Valid @RequestBody ClientAddressUserDTO clientDTO) {
+    public ResponseEntity<ClientDTO> createClientAndUser(@Valid @RequestBody ClientAddressUserDTO clientDTO) throws Exception {
 
         ClientAddressUserDTO clientAddress = clientService.createClientAddress(clientDTO);
         HttpStatus status = HttpStatus.CREATED;

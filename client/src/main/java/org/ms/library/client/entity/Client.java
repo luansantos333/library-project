@@ -1,7 +1,6 @@
 package org.ms.library.client.entity;
 
 import jakarta.persistence.*;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 
 import java.util.Objects;
 import java.util.UUID;

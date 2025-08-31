@@ -3,16 +3,18 @@ package org.ms.library.client.dto;
 import jakarta.validation.constraints.NotBlank;
 import org.ms.library.client.entity.Client;
 import org.ms.library.client.utils.ValidCPF;
+import org.ms.library.client.utils.ValidPhone;
 
 public class ClientAddressUserDTO {
 
     private Long id;
-    @NotBlank (message = "You need to input your name!")
+    @NotBlank(message = "You need to input your name!")
     private String name;
-    @NotBlank (message = "You need to input your last name!")
+    @NotBlank(message = "You need to input your last name!")
     private String lastName;
     @ValidCPF
     private String cpf;
+    @ValidPhone
     private String phone;
     private AddressDTO address;
     private UserCompleteDTO user;
