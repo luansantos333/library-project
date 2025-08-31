@@ -111,6 +111,15 @@ public class BookService {
             referenceById.setQuantity(referenceById.getQuantity() + amount);
         } else if (operation.equalsIgnoreCase("DECREASE")) {
 
+
+            if (referenceById.getQuantity() < amount) {
+
+
+                throw new IllegalArgumentException("We do not have that quantity of books available in stock!");
+
+
+            }
+
             referenceById.setQuantity(referenceById.getQuantity() - amount);
 
         } else {
