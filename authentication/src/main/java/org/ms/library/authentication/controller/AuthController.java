@@ -19,7 +19,6 @@ public class AuthController {
     public AuthController(UserService userService) {
         this.userService = userService;
     }
-
     @GetMapping("/search")
     public ResponseEntity<UserDetails> findByEmail (@RequestParam(required = true, name = "email") String email) {
 
@@ -28,6 +27,4 @@ public class AuthController {
         return ResponseEntity.ok(userDetails);
 
     }
-
-
 }

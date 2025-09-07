@@ -1,7 +1,9 @@
 package org.ms.library.authentication.service;
 
+import com.netflix.discovery.converters.Auto;
 import org.ms.library.authentication.dto.UserDTO;
 import org.ms.library.authentication.feign.UserFeignClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,11 +18,10 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserDetailsService {
 
-    private final UserFeignClient userFeignClient;
+    @Autowired
+    private  UserFeignClient userFeignClient;
 
-    public UserService(UserFeignClient userFeignClient) {
-        this.userFeignClient = userFeignClient;
-    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
