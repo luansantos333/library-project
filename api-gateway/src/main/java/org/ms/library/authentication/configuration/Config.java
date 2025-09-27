@@ -14,18 +14,21 @@ public class Config {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
-            .authorizeExchange(exchange -> exchange
-                // Allow requests to the authorization server's endpoints to pass through
-                .pathMatchers("/oauth2/**", "/login", "/api/auth/**").permitAll()
-                // All other requests must be authenticated
-                .anyExchange().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(Customizer.withDefaults())); // Validate tokens as JWTs
+                .authorizeExchange(exchange -> exchange
+                        // Allow requests to the authorization server's endpoints to pass through
+                        .pathMatchers("/oauth2/**", "/login", "/api/auth/**").permitAll()
+                        // All other requests must be authenticated
+                        .anyExchange().authenticated()
+                )
+                .oauth2Login(Customizer.withDefaults()) // Add this line
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(Customizer.withDefaults()));
 
         // Disable CSRF for now as it's complex with SPAs, can be enabled later
         http.csrf(ServerHttpSecurity.CsrfSpec::disable);
 
         return http.build();
     }
+
 }
+

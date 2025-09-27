@@ -54,8 +54,6 @@ public class RentalService {
 
         for (RentalItemDTO rentalItemDTO : rental.getItems()) {
 
-
-
             catalogFeign.changeStockQuantity(rentalItemDTO.getBookId(), rentalItemDTO.getQuantity(), "DECREASE");
 
         }
