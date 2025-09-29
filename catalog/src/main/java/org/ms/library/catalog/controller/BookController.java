@@ -8,6 +8,7 @@ import org.ms.library.catalog.service.BookService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -24,6 +25,7 @@ public class BookController {
         this.service = service;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @GetMapping
     public ResponseEntity<Page<BookDTO>> findAllBooks(Pageable pageable) {
 
@@ -32,6 +34,7 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/categories/{title}")
     public ResponseEntity<Page<BookCategoriesProjection>> getAllBookCategories(@PathVariable(name = "title") String title,
                                                                                @RequestParam(name = "author", required = false) String author,
@@ -42,7 +45,7 @@ public class BookController {
 
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<BookCategoriesDTO> findOneBook(@PathVariable(name = "id") Long id) {
 
@@ -51,6 +54,7 @@ public class BookController {
         return ResponseEntity.ok(bookById);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<BookCategoriesDTO> saveBook(@Valid @RequestBody BookCategoriesDTO bookDTO) {
 
@@ -70,7 +74,7 @@ public class BookController {
     }
 
      */
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable(name = "id") Long id) {
 
@@ -79,6 +83,7 @@ public class BookController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/stock/{id}")
     public ResponseEntity<BookCategoriesDTO> changeStockQuantity(@PathVariable(name = "id") Long id,  @RequestParam(required = true, name = "amount") Integer amount, @RequestParam (required = true, name = "operation", defaultValue = "increase") String operation) {
 
@@ -89,6 +94,8 @@ public class BookController {
 
     }
 
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/by-ids")
     public ResponseEntity<Set<BookCategoriesDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) Set<Long> ids) {
 

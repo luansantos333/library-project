@@ -5,6 +5,7 @@ import org.ms.library.catalog.entity.Category;
 import org.ms.library.catalog.repository.CategoryRepository;
 import org.ms.library.catalog.service.exceptions.NoCategoryFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@EnableWebSecurity
 public class CategoryService {
 
     @Autowired

@@ -15,6 +15,19 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class ResourceServerConfiguration {
 
 
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+
+        http.authorizeExchange(authorize -> authorize.pathMatchers("/oauth2/**", "/oauth/**", "/api/auth/**").
+                permitAll().anyExchange().authenticated()).oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {
+
+        }));
+
+        return http.build();
+
+
+    }
+
 
 
 }

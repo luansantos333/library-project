@@ -14,7 +14,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.AbstractRequestMatcherRegistry;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,7 +22,6 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.web.SecurityFilterChain;
@@ -44,6 +42,8 @@ public class AuthorizationConfig {
     private String client_id;
     @Value("${library.client.secret}")
     private String client_secret;
+    @Value("${jwt.token.duration.in.seconds}")
+    private Long tokenDuration;
     private final CustomOauth2AuthenticationProvider customOauth2AuthenticationProvider;
 
 
@@ -55,14 +55,22 @@ public class AuthorizationConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 
-        http.with(OAuth2AuthorizationServerConfigurer.authorizationServer(), Customizer.withDefaults());
+        OAuth2AuthorizationServerConfigurer oAuth2AuthorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+
+        oAuth2AuthorizationServerConfigurer.tokenEndpoint((tokenEndpoint) ->
+                tokenEndpoint.authenticationProvider(customOauth2AuthenticationProvider));
+        http.with(oAuth2AuthorizationServerConfigurer, Customizer.withDefaults());
 
         http
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable()).authorizeHttpRequests(authorize -> authorize.requestMatchers("/oauth2/**").permitAll().anyRequest().authenticated());
+                .csrf(csrf -> csrf.disable()).
+                authorizeHttpRequests(authorize -> authorize.requestMatchers("/oauth2/**", "/oauth/**", "/.well_known/**").permitAll().anyRequest().authenticated());
+        http.httpBasic(Customizer.withDefaults());
+        http.formLogin(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
+
 
     // IN MEMORY CLIENT REPOSITORY BEAN FOR TESTING
 
@@ -72,11 +80,11 @@ public class AuthorizationConfig {
                 .clientId(client_id)
                 .clientSecret("{noop}" + client_secret)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .authorizationGrantType(AuthorizationGrantType.PASSWORD)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .scope("book.read")
                 .scope("book.write")
-                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
+                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofSeconds(tokenDuration)).build())
                 .build();
 
         return new InMemoryRegisteredClientRepository(registeredClient);

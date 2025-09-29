@@ -11,12 +11,14 @@ import org.ms.library.client.service.exceptions.ClientNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@EnableWebSecurity
 public class ClientService {
 
     private final ClientRepository clientRepository;

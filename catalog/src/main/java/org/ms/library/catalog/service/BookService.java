@@ -11,6 +11,7 @@ import org.ms.library.catalog.service.exceptions.NoBookFoundException;
 import org.ms.library.catalog.service.exceptions.NoCategoryFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@EnableWebSecurity
 public class BookService {
 
     private final BookRepository bookRepository;
