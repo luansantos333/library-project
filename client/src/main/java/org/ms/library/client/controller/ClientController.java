@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -28,13 +29,20 @@ public class ClientController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<ClientDTO> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<ClientDTO> findById(@PathVariable("id") Long id, Authentication authentication) {
 
+        boolean validateIfLoggedUserIsAdminOrOwner = clientService.validateIfLoggedUserIsAdminOrOwner(id, authentication);
+
+        if (!validateIfLoggedUserIsAdminOrOwner) {
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        }
         ClientDTO clientById = clientService.findClientById(id);
         return ResponseEntity.ok(clientById);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<Page<ClientDTO>> findClient(@RequestParam(required = true, name = "name")
                                       String name, @RequestParam(required = false, name = "cpf") String cpf,
@@ -50,7 +58,16 @@ public class ClientController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping ("/address/{id}")
-    public ResponseEntity<ClientAddressDTO> findClientAndAddressByID(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<ClientAddressDTO> findClientAndAddressByID(@PathVariable(name = "id") Long id, Authentication authentication ) {
+
+
+        boolean validateIfLoggedUserIsAdminOrOwner = clientService.validateIfLoggedUserIsAdminOrOwner(id, authentication);
+
+        if (!validateIfLoggedUserIsAdminOrOwner) {
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        }
 
         ClientAddressDTO clientAddressById = clientService.findClientAddressById(id);
 
@@ -58,7 +75,7 @@ public class ClientController {
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping ("/address")
     public ResponseEntity<Page<ClientAddressProjection>> findClientsAndAddressesByNameOrCPF (Pageable p, @RequestParam (name = "name", required = false) String name,
                                                                                              @RequestParam (name = "cpf", required = false) String cpf) {

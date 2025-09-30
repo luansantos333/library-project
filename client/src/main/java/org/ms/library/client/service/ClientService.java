@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,10 +100,10 @@ public class ClientService {
     }
 
 
-    private void copyDTOContentToEntity (ClientAddressUserDTO clientDTO,  Client entity, UserDTO userDTO, Address address) {
+    private void copyDTOContentToEntity(ClientAddressUserDTO clientDTO, Client entity, UserDTO userDTO, Address address) {
 
         entity.setName(clientDTO.getName());
-        entity.setCpf( clientDTO.getCpf().replaceAll("\\D", ""));
+        entity.setCpf(clientDTO.getCpf().replaceAll("\\D", ""));
         address.setCity(clientDTO.getAddress().getCity());
         address.setState(clientDTO.getAddress().getState());
         address.setCountry(clientDTO.getAddress().getCountry());
@@ -113,6 +115,36 @@ public class ClientService {
         entity.setPhone(clientDTO.getPhone().replaceAll("\\D", ""));
         entity.setAddress(savedAddress);
         entity.setUser_id(userDTO.getId());
+
+    }
+
+    public boolean validateIfLoggedUserIsAdminOrOwner(Long clientId, Authentication authentication) {
+
+        if (authentication == null) {
+            return false;
+        }
+
+        // CHECK IF USER HAS ROLE ADMIN
+        JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+        if (jwtAuthenticationToken.getTokenAttributes().get("roles").toString().contains("ROLE_ADMIN")) {
+
+            return true;
+        }
+
+
+        Client client = clientRepository.findById(clientId).orElseThrow(() -> new ClientNotFoundException("No client found with this id!"));
+        UserDTO body = feignClient.findUserById(client.getUser_id().toString()).getBody();
+
+
+        // CHECK IF USER IS THE OWNER OF THE RESOURCE
+        if (jwtAuthenticationToken.getTokenAttributes().get("username").equals(body.getUsername())) {
+
+            return true;
+
+        }
+
+
+        return false;
 
     }
 
