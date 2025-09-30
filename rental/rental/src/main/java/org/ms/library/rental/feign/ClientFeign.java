@@ -11,4 +11,5 @@ public interface ClientFeign {
 
     @GetMapping("/{id}")
     ResponseEntity<ClientDTO> findById(@PathVariable("id") Long id);
+
 }

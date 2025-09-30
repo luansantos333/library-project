@@ -57,6 +57,36 @@ public class ClientService {
     }
 
 
+    @Transactional
+    public ClientAddressDTO updateClientById(Long clientId, ClientAddressDTO clientAddressDTO) {
+
+        if (!clientRepository.existsById(clientId)) {
+
+
+            throw new ClientNotFoundException("Client not found with the id: " + clientId);
+
+        }
+
+        Client client = clientRepository.getReferenceById(clientId);
+        Address address = addressRepository.getReferenceById(client.getAddress().getId());
+        client.setName(clientAddressDTO.getName());
+        client.setCpf(clientAddressDTO.getCpf());
+        client.setPhone(clientAddressDTO.getPhone());
+        client.setLastName(clientAddressDTO.getLastName());
+        address.setAddress(clientAddressDTO.getAddressDTO().getAddress());
+        address.setCity(clientAddressDTO.getAddressDTO().getCity());
+        address.setZip(clientAddressDTO.getAddressDTO().getZip());
+        address.setState(clientAddressDTO.getAddressDTO().getState());
+        address.setCountry(clientAddressDTO.getAddressDTO().getCountry());
+        Address savedAddress = addressRepository.save(address);
+        client.setAddress(savedAddress);
+        clientRepository.save(client);
+
+        return new ClientAddressDTO(client);
+
+
+    }
+
     @Transactional(readOnly = true)
     public ClientAddressDTO findClientAddressById(Long id) {
 

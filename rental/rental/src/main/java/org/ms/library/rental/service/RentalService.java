@@ -10,6 +10,8 @@ import org.ms.library.rental.repository.RentalItemRepository;
 import org.ms.library.rental.repository.RentalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -166,6 +168,8 @@ public class RentalService {
 
 
     }
+
+
 
 
 }

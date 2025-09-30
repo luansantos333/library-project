@@ -102,4 +102,26 @@ public class ClientController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PatchMapping("/{clientID}")
+    public ResponseEntity<ClientAddressDTO> updateClient (@PathVariable Long clientID, @Valid @RequestBody ClientAddressDTO clientAddressDTO, Authentication authentication) {
+
+
+        boolean validateIfLoggedUserIsAdminOrOwner = clientService.validateIfLoggedUserIsAdminOrOwner(clientID, authentication);
+
+        if (!validateIfLoggedUserIsAdminOrOwner) {
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        }
+
+        ClientAddressDTO updatedClient = clientService.updateClientById(clientID, clientAddressDTO);
+
+        HttpStatus status = HttpStatus.CREATED;
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(updatedClient.getId()).toUri();
+
+        return ResponseEntity.status(status).location(location).build();
+    }
+
+
 }
