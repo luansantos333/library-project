@@ -6,6 +6,7 @@ import org.ms.library.rental.entities.RentalItem;
 import org.ms.library.rental.entities.RentalStatus;
 import org.ms.library.rental.feign.CatalogFeign;
 import org.ms.library.rental.feign.ClientFeign;
+import org.ms.library.rental.feign.UserFeign;
 import org.ms.library.rental.repository.RentalItemRepository;
 import org.ms.library.rental.repository.RentalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,10 @@ public class RentalService {
 
     @Autowired
     private ClientFeign clientFeign;
+
+    @Autowired
+    private UserFeign userFeign;
+
     private final RentalRepository rentalRepository;
     private final RentalItemRepository rentalItemRepository;
 
@@ -66,35 +71,35 @@ public class RentalService {
 
 
     @Transactional(readOnly = true)
-    public RentalsBookCategoriesClientDTO getRentalInfoByClientId(Long clientId) {
+    public RentalsBookCategoriesClientDTO getRentalInfoByClientId(Long clientId, Authentication authentication) {
 
         ClientDTO clientFoundByID = clientFeign.findById(clientId).getBody();
-
-        if (clientFoundByID != null) {
-
-            List<Rental> rentalsByClientId = rentalRepository.findRentalsByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
-
-            Map<Long, BookCategoriesDTO> bookDTOMap = new HashMap<>();
-
-            for (Rental rental : rentalsByClientId) {
-
-                Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(rental.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
-
-                for (BookCategoriesDTO book : body) {
-
-                    bookDTOMap.put(book.getId(), book);
-
-                }
-
-            }
-
-            return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId, bookDTOMap);
-
-
+        if (clientFoundByID == null) {
+            throw new NoSuchElementException("Client not found");
         }
 
-        return null;
+        if (!isUserAdminOrOwner(clientFoundByID, authentication)) {
+            return null;
+        }
 
+        List<Rental> rentalsByClientId = rentalRepository.findRentalsByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
+
+        Set<Long> allBookIds = rentalsByClientId.stream()
+                .flatMap(rental -> rental.getItems().stream())
+                .map(RentalItem::getBookId)
+                .collect(Collectors.toSet());
+
+        Map<Long, BookCategoriesDTO> bookDTOMap = new HashMap<>();
+        if (!allBookIds.isEmpty()) {
+            Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(allBookIds).getBody();
+            if (body != null) {
+                for (BookCategoriesDTO book : body) {
+                    bookDTOMap.put(book.getId(), book);
+                }
+            }
+        }
+
+        return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId, bookDTOMap);
     }
 
 
@@ -129,6 +134,28 @@ public class RentalService {
         }
 
 
+    }
+
+    private boolean isUserAdminOrOwner(ClientDTO client, Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
+
+        JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+        if (jwtAuthenticationToken.getTokenAttributes().get("roles").toString().contains("ROLE_ADMIN")) {
+            return true;
+        }
+
+        if (client.getUser_id() == null) {
+            return false;
+        }
+
+        UserDTO user = userFeign.findUserById(client.getUser_id().toString()).getBody();
+        if (user == null) {
+            return false;
+        }
+
+        return jwtAuthenticationToken.getTokenAttributes().get("username").equals(user.getUsername());
     }
 
 

@@ -2,12 +2,15 @@ package org.ms.library.client.dto;
 
 import org.ms.library.client.entity.Client;
 
+import java.util.UUID;
+
 public class ClientDTO {
     private Long id;
     private String name;
     private String lastName;
     private String cpf;
     private String phone;
+    private UUID user_id;
 
     public ClientDTO(Client client) {
 
@@ -16,6 +19,7 @@ public class ClientDTO {
         this.lastName = client.getLastName();
         this.cpf = client.getCpf();
         this.phone = client.getPhone();
+        this.user_id = client.getUser_id();
 
 
     }
@@ -41,5 +45,9 @@ public class ClientDTO {
 
     public String getPhone() {
         return phone;
+    }
+
+    public UUID getUser_id() {
+        return user_id;
     }
 }
