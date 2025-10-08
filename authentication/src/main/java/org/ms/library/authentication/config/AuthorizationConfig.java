@@ -11,12 +11,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
@@ -24,6 +26,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.KeyPair;
@@ -32,7 +36,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -60,11 +68,11 @@ public class AuthorizationConfig {
         oAuth2AuthorizationServerConfigurer.tokenEndpoint((tokenEndpoint) ->
                 tokenEndpoint.authenticationProvider(customOauth2AuthenticationProvider));
         http.with(oAuth2AuthorizationServerConfigurer, Customizer.withDefaults());
-
+        http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
         http
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable()).
-                authorizeHttpRequests(authorize -> authorize.requestMatchers("/oauth2/**", "/oauth/**", "/.well_known/**").permitAll().anyRequest().authenticated());
+                .csrf(AbstractHttpConfigurer::disable).
+                authorizeHttpRequests(authorize -> authorize.requestMatchers("/oauth2/**", "/oauth/**", "/.well-known/**").permitAll().anyRequest().authenticated());
         http.httpBasic(Customizer.withDefaults());
         http.formLogin(AbstractHttpConfigurer::disable);
 
@@ -75,16 +83,24 @@ public class AuthorizationConfig {
     // IN MEMORY CLIENT REPOSITORY BEAN FOR TESTING
 
     @Bean
-    public RegisteredClientRepository registeredClientRepository() {
+    public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder) {
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId(client_id)
-                .clientSecret("{noop}" + client_secret)
+                .clientSecret(encoder.encode(client_secret))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.PASSWORD)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("book.read")
-                .scope("book.write")
-                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofSeconds(tokenDuration)).build())
+                .scope("catalog.read")
+                .scope("catalog.write")
+                .scope("user.read")
+                .scope("user.write")
+                .scope("rental.read")
+                .scope("rental.write")
+                .scope("client.read")
+                .scope("client.write")
+                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofSeconds(tokenDuration)).
+                        refreshTokenTimeToLive(Duration.ofSeconds(tokenDuration)).
+                        reuseRefreshTokens(false).build())
                 .build();
 
         return new InMemoryRegisteredClientRepository(registeredClient);
@@ -130,6 +146,42 @@ public class AuthorizationConfig {
     public AuthenticationManager authenticationManager() {
         return new ProviderManager(customOauth2AuthenticationProvider);
     }
+
+    @Bean
+    OAuth2TokenCustomizer<JwtEncodingContext> mappingRoleToScope() {
+
+        return context -> {
+
+            var principalAuthorities = context.getPrincipal().getAuthorities();
+            Set<String> tokenRoles = principalAuthorities.stream().
+                    map(x -> x.getAuthority()).
+                    filter(x -> x.startsWith("ROLE_")).collect(Collectors.toSet());
+
+            Set<String> mapScopes = new HashSet<>();
+            String username = context.getPrincipal().getName();
+            if (tokenRoles.isEmpty()) {
+
+                throw new AuthenticationCredentialsNotFoundException("No roles assigned to the user");
+
+            }
+
+            if (tokenRoles.contains("ROLE_ADMIN")) {
+
+                mapScopes.addAll(Arrays.asList("catalog.read", "catalog.write", "client.read", "client.write", "user.read", "user.write", "rental.read", "rental.write"));
+
+            } else
+                mapScopes.addAll(Arrays.asList("catalog.read")); // Analisar depois quais autorizações o perfil de usuário deve ter
+
+            context.getClaims().claim("roles", tokenRoles);
+            context.getClaims().claim("scope", mapScopes);
+            context.getClaims().claim("username", username);
+
+
+        };
+
+    }
+
+
 
 
 }

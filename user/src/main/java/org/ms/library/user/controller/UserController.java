@@ -22,8 +22,8 @@ public class UserController {
     }
 
 
-    @GetMapping
-    public ResponseEntity<UserDTO> findUserRoleByUsername(@RequestParam(required = true, name = "username") String username) {
+    @GetMapping("/internal")
+    public ResponseEntity<UserDTO> findUserRoleByUsernameInternal(@RequestParam(required = true, name = "username") String username) {
 
         UserDTO userByUsernameAndPassword = userService.findUserRoleByUsername(username);
         return userByUsernameAndPassword == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(userByUsernameAndPassword);

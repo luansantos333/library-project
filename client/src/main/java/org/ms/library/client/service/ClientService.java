@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-@EnableWebSecurity
+//@EnableWebSecurity
 public class ClientService {
 
     private final ClientRepository clientRepository;

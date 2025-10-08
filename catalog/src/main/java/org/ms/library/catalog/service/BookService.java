@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@EnableWebSecurity
+//@EnableWebSecurity
 public class BookService {
 
     private final BookRepository bookRepository;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface UserFeignClient {
 
 
-    @GetMapping
-    ResponseEntity<UserDTO> findUserRoleByUsername(@RequestParam(required = true, name = "username") String username);
+    @GetMapping("/internal")
+    ResponseEntity<UserDTO> findUserRoleByUsernameInternal(@RequestParam(required = true, name = "username") String username);
 
 }
