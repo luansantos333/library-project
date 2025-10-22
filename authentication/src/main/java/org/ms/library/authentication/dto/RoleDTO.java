@@ -1,6 +1,5 @@
 package org.ms.library.authentication.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import org.ms.library.authentication.entity.Role;
 
 public class RoleDTO {

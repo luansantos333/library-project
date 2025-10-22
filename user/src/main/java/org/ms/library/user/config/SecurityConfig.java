@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(HttpMethod.POST, "/api/user").permitAll().
                         requestMatchers(HttpMethod.GET, "/api/user/internal/**").permitAll().requestMatchers(org.springframework.http.HttpMethod.GET, "/api/user/").hasAuthority("SCOPE_user.read").anyRequest().authenticated());
 
-        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+        //http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
         return http.build();
 
@@ -33,7 +33,10 @@ public class SecurityConfig {
 
     }
 
-    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+    /*
+
+    @Bean
+     JwtAuthenticationConverter jwtAuthenticationConverter() {
 
         JwtGrantedAuthoritiesConverter  scopes = new JwtGrantedAuthoritiesConverter();
         scopes.setAuthorityPrefix("SCOPE_");
@@ -43,8 +46,7 @@ public class SecurityConfig {
         converter.setJwtGrantedAuthoritiesConverter(scopes);
         return converter;
 
-
     }
-
+*/
 
 }

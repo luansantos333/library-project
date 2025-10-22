@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,11 +22,16 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -36,10 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -53,6 +53,8 @@ public class AuthorizationConfig {
     @Value("${jwt.token.duration.in.seconds}")
     private Long tokenDuration;
     private final CustomOauth2AuthenticationProvider customOauth2AuthenticationProvider;
+    @Value("${authorization-code.redirect-uri}")
+    private String redirectURI;
 
 
     public AuthorizationConfig(CustomOauth2AuthenticationProvider customOauth2AuthenticationProvider) {
@@ -63,58 +65,78 @@ public class AuthorizationConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 
-        OAuth2AuthorizationServerConfigurer oAuth2AuthorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+        http.getConfigurer(authorizationServerConfigurer.getClass()).oidc(Customizer.withDefaults());
+        http.authenticationProvider(customOauth2AuthenticationProvider);
+        http.exceptionHandling((c) -> {
 
-        oAuth2AuthorizationServerConfigurer.tokenEndpoint((tokenEndpoint) ->
-                tokenEndpoint.authenticationProvider(customOauth2AuthenticationProvider));
-        http.with(oAuth2AuthorizationServerConfigurer, Customizer.withDefaults());
-        http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable).
-                authorizeHttpRequests(authorize -> authorize.requestMatchers("/oauth2/**", "/oauth/**", "/.well-known/**").permitAll().anyRequest().authenticated());
+            c.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+        });
+
+        return http.build();
+    }
+
+    @Bean
+    @Order (2)
+    public SecurityFilterChain endpointAuthorizationFilterChain (HttpSecurity http) throws Exception {
+
+        http.formLogin(Customizer.withDefaults());
         http.httpBasic(Customizer.withDefaults());
-        http.formLogin(AbstractHttpConfigurer::disable);
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/oauth2/**", "/.well-known/**").permitAll().anyRequest().authenticated());
+        http.cors(cors -> {
+            CorsConfigurationSource corsConfigurationSource = request -> {
+                CorsConfiguration corsConfiguration = new CorsConfiguration();
+                corsConfiguration.setAllowedOrigins(List.of("http://localhost:8085", "http://example.com", "http://example2.com"));
+                corsConfiguration.setAllowedMethods(List.of("POST", "GET"));
+                corsConfiguration.setAllowedHeaders(List.of("*"));
+                return corsConfiguration;
+            };
+
+            cors.configurationSource(corsConfigurationSource);
+        });
+
+        http.csrf(AbstractHttpConfigurer::disable);
+
 
         return http.build();
     }
 
 
-    // IN MEMORY CLIENT REPOSITORY BEAN FOR TESTING
+    @Bean
+    public AuthorizationServerSettings authorizationServerSettings() {
+        return AuthorizationServerSettings.builder().build();
+    }
+
 
     @Bean
     public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder) {
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId(client_id)
-                .clientSecret(encoder.encode(client_secret))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("catalog.read")
-                .scope("catalog.write")
-                .scope("user.read")
-                .scope("user.write")
-                .scope("rental.read")
-                .scope("rental.write")
-                .scope("client.read")
-                .scope("client.write")
-                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofSeconds(tokenDuration)).
-                        refreshTokenTimeToLive(Duration.ofSeconds(tokenDuration)).
-                        reuseRefreshTokens(false).build())
-                .build();
+        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString()).
+                clientId(client_id).clientSecret("{noop}" + client_secret).
+                clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC).
+                authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).
+                authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN).
+                redirectUri(redirectURI).
+                scope("catalog.read").
+                scope("catalog.write").
+                scope("user.read").
+                scope("user.write").
+                scope("rental.read").
+                scope("rental.write").
+                scope("client.read").
+                scope("client.write").
+                tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofSeconds(tokenDuration)).build()).
+                build();
 
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
 
 
-    // JWK SOURCE BEAN
     @Bean
     JWKSource<SecurityContext> jwkSource() throws NoSuchAlgorithmException {
 
         KeyPair keyPair = generateKeyPairRSAKeys();
-        RSAKey rsakey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic()).
-                privateKey((RSAPrivateKey) keyPair.getPrivate())
-                .keyID(UUID.randomUUID().toString()).build();
+        RSAKey rsakey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic()).privateKey((RSAPrivateKey) keyPair.getPrivate()).keyID(UUID.randomUUID().toString()).build();
         JWKSet jwkSet = new JWKSet(rsakey);
 
         return new ImmutableJWKSet<>(jwkSet);
@@ -122,8 +144,6 @@ public class AuthorizationConfig {
 
     }
 
-
-    // GENERATE RSA KEY PAIR FOR JWK
     private KeyPair generateKeyPairRSAKeys() throws NoSuchAlgorithmException {
 
         KeyPair keypar;
@@ -141,11 +161,6 @@ public class AuthorizationConfig {
 
     }
 
-    // IMPLEMENTS CUSTOM AUTHENTICATION MANAGER
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        return new ProviderManager(customOauth2AuthenticationProvider);
-    }
 
     @Bean
     OAuth2TokenCustomizer<JwtEncodingContext> mappingRoleToScope() {
@@ -153,9 +168,7 @@ public class AuthorizationConfig {
         return context -> {
 
             var principalAuthorities = context.getPrincipal().getAuthorities();
-            Set<String> tokenRoles = principalAuthorities.stream().
-                    map(x -> x.getAuthority()).
-                    filter(x -> x.startsWith("ROLE_")).collect(Collectors.toSet());
+            Set<String> tokenRoles = principalAuthorities.stream().map(x -> x.getAuthority()).filter(x -> x.startsWith("ROLE_")).collect(Collectors.toSet());
 
             Set<String> mapScopes = new HashSet<>();
             String username = context.getPrincipal().getName();
@@ -180,7 +193,6 @@ public class AuthorizationConfig {
         };
 
     }
-
 
 
 

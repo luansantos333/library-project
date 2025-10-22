@@ -30,6 +30,7 @@ public class UserController {
 
     }
 
+
     @GetMapping("/{UUID}")
     public ResponseEntity<UserDTO> findUserById(@PathVariable String uuid) {
 

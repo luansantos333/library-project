@@ -1,9 +1,9 @@
 package org.ms.library.authentication.controller;
 
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.ms.library.authentication.dto.UserDTO;
 import org.ms.library.authentication.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +19,17 @@ public class AuthController {
     public AuthController(UserService userService) {
         this.userService = userService;
     }
-    @GetMapping("/search")
-    public ResponseEntity<UserDetails> findByEmail (@RequestParam(required = true, name = "email") String email) {
 
-        UserDetails userDetails = userService.loadUserByUsername(email);
 
-        return ResponseEntity.ok(userDetails);
+
+    /*
+    @GetMapping
+    public ResponseEntity<UserDTO> getMe (Authentication authentication) {
+
+
 
     }
+    */
+
+
 }

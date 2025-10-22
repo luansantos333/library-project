@@ -1,7 +1,5 @@
 package org.ms.library.authentication.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 import org.ms.library.authentication.entity.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -32,8 +30,6 @@ public class UserDTO {
         }
 
     }
-
-
 
 
     public String getPassword() {
