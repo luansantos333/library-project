@@ -12,7 +12,7 @@ public class RentalsBookCategoriesClientDTO {
     private String clientLastName;
     private String ClientCpf;
     private String clientPhone;
-    private List<LoanDTO> rentals = new ArrayList<>();
+    private final List<LoanDTO> rentals = new ArrayList<>();
     private Double total;
 
 

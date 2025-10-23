@@ -15,12 +15,12 @@ public class LoanDTO {
 
     private UUID id;
     private LocalDateTime loanDate;
-    @NotNull (message = "Client id required")
+    @NotNull(message = "Client id required")
     private Long clientId;
-    @PastOrPresent (message = "Return date needs to be today or before")
+    @PastOrPresent(message = "Return date needs to be today or before")
     private LocalDateTime returnDate;
     private LocalDateTime dueDate;
-    @NotNull (message = "You need to rent atleast one book to call this service")
+    @NotNull(message = "You need to rent at least one book to call this service")
     private Set<LoanItemDTO> items = new HashSet<>();
     private Double total;
 
@@ -72,14 +72,8 @@ public class LoanDTO {
     }
 
 
-
-
-
     public LoanDTO() {
     }
-
-
-
 
     public LocalDateTime getReturnDate() {
         return returnDate;
@@ -95,6 +89,10 @@ public class LoanDTO {
 
     public LocalDateTime getLoanDate() {
         return loanDate;
+    }
+
+    public void setLoanDate(LocalDateTime loanDate) {
+        this.loanDate = loanDate;
     }
 
     public Long getClientId() {

@@ -9,6 +9,8 @@ import org.ms.library.catalog.repository.CategoryRepository;
 import org.ms.library.catalog.repository.projection.BookCategoriesProjection;
 import org.ms.library.catalog.service.exceptions.NoBookFoundException;
 import org.ms.library.catalog.service.exceptions.NoCategoryFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,11 +22,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-//@EnableWebSecurity
 public class BookService {
 
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
+    private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
 
     public BookService(BookRepository bookRepository, CategoryRepository categoryRepository) {
@@ -44,7 +46,12 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public BookCategoriesDTO getBookCategoriesByBookID(Long id) {
-        Book book = bookRepository.findBookCategoriesByBookID(id).orElseThrow(() -> new NoBookFoundException("No book found with id: " + id));
+        Book book = bookRepository.findBookCategoriesByBookID(id).orElseThrow(() -> {
+
+            logger.error("No book found with id {}", id);
+            return new NoBookFoundException("No book found with id: " + id);
+
+        });
         return new BookCategoriesDTO(book);
 
     }
@@ -56,6 +63,7 @@ public class BookService {
 
             if (!categoryRepository.existsById(id)) {
 
+                logger.error("Category not found with id {}", id);
                 throw new NoCategoryFoundException("No category found with id: " + id);
 
             }
@@ -63,7 +71,8 @@ public class BookService {
         }
         Book book = new Book();
         DTOtoEntity(bookDTO, book);
-        bookRepository.save(book);
+        Book persistedEntity = bookRepository.save(book);
+        logger.info("Added new book with id {}", persistedEntity.getId());
         return new BookCategoriesDTO(book);
     }
 
@@ -73,6 +82,7 @@ public class BookService {
 
         if (!bookRepository.existsById(id)) {
 
+            logger.error("Book not found with id {}", id);
             throw new NoBookFoundException("No book found with this id: " + id);
         }
 
@@ -80,6 +90,7 @@ public class BookService {
         DTOtoEntity(bookDTO, referenceById);
 
         bookRepository.save(referenceById);
+        logger.info("Updated book successfully");
         return new BookCategoriesDTO(referenceById);
 
 
@@ -92,7 +103,10 @@ public class BookService {
 
         Optional<Page<BookCategoriesProjection>> books = bookRepository.findAllBooksCategories(title, author, category, pageable);
 
-        return books.orElseThrow(() -> new NoBookFoundException("No books found with title: " + title + ", author: " + author + ", category: " + category));
+        return books.orElseThrow(() -> {
+            logger.error("No books found with title {} and author {} and category {}", title, author, category);
+            return new NoBookFoundException("No books found with title: " + title + ", author: " + author + ", category: " + category);
+        });
 
     }
 
@@ -101,6 +115,8 @@ public class BookService {
     public BookCategoriesDTO changeStockAmount(Long id, Integer amount, String operation) {
 
         if (!bookRepository.existsById(id)) {
+
+            logger.error("Book not found with id {}", id);
             throw new NoBookFoundException("No book found with this id: " + id);
 
         }
@@ -111,13 +127,15 @@ public class BookService {
         if (operation.equalsIgnoreCase("INCREASE")) {
 
             referenceById.setQuantity(referenceById.getQuantity() + amount);
+            logger.info("Updated stock amount successfully");
         } else if (operation.equalsIgnoreCase("DECREASE")) {
 
             referenceById.setQuantity(referenceById.getQuantity() - amount);
+            logger.info("Updated stock amount successfully");
 
         } else {
 
-
+            logger.error("Operation not supported");
             throw new IllegalArgumentException("Invalid operation!");
 
         }
@@ -149,7 +167,7 @@ public class BookService {
 
         if (!bookRepository.existsById(id)) {
 
-
+            logger.error("Book not found with id {}", id);
             throw new NoBookFoundException("No book found with this id: " + id);
         }
 

@@ -18,6 +18,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     @Query (value = "SELECT c.name AS name, c.lastName AS lastName, c.cpf AS cpf, c.phone AS phone, a.address AS address, a.city AS city, a.zip AS zip, a.country AS country, a.state AS state FROM tb_client c JOIN " +
             "c.address a WHERE UPPER(c.name) = UPPER(:name) AND (:cpf IS NULL OR c.cpf LIKE (CONCAT('%', :cpf, '%')))",
     countQuery = "SELECT COUNT(c.id) FROM tb_client c JOIN c.address a")
-    Page<ClientAddressProjection> searchClientAddressByClientNameOrCpf(Pageable p, String name, String cpf);
+    Optional<Page<ClientAddressProjection>> searchClientAddressByClientNameOrCpf(Pageable p, String name, String cpf);
 
 }

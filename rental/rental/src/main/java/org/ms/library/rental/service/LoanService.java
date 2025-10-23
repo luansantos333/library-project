@@ -1,5 +1,6 @@
 package org.ms.library.rental.service;
 
+import feign.FeignException;
 import org.ms.library.rental.dto.*;
 import org.ms.library.rental.entities.Loan;
 import org.ms.library.rental.entities.LoanItem;
@@ -9,8 +10,11 @@ import org.ms.library.rental.feign.ClientFeign;
 import org.ms.library.rental.feign.UserFeign;
 import org.ms.library.rental.repository.LoanItemRepository;
 import org.ms.library.rental.repository.LoanRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -22,17 +26,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class LoanService {
-    @Autowired
-    private CatalogFeign catalogFeign;
-
-    @Autowired
-    private ClientFeign clientFeign;
-
-    @Autowired
-    private UserFeign userFeign;
-
     private final LoanRepository loanRepository;
     private final LoanItemRepository loanItemRepository;
+    @Autowired
+    private CatalogFeign catalogFeign;
+    @Autowired
+    private ClientFeign clientFeign;
+    @Autowired
+    private UserFeign userFeign;
+    private static final Logger logger = LoggerFactory.getLogger(LoanService.class);
 
     public LoanService(LoanRepository loanRepository, LoanItemRepository loanItemRepository) {
         this.loanRepository = loanRepository;
@@ -40,32 +42,42 @@ public class LoanService {
     }
 
     @Transactional
-    public LoanDTO orderNewLoan(LoanDTO loan) {
+    public LoanDTO orderNewLoan(LoanDTO loan) throws Exception {
 
-        Loan loanEntity = new Loan();
-        ResponseEntity<ClientDTO> clientFeignById = clientFeign.findById(loan.getClientId());
+        try {
+            Loan loanEntity = new Loan();
+            ResponseEntity<ClientDTO> clientFeignById = clientFeign.findById(loan.getClientId());
 
-        if (clientFeignById.getBody().getId() == null) {
+            loan.setLoanDate(LocalDateTime.now());
 
-            throw new NoSuchElementException("Client not found");
+            if (clientFeignById.getBody().getId() == null) {
 
+                logger.error("No client found with id {}", loan.getClientId());
+                throw new NoSuchElementException("Client not found");
+
+            }
+
+            copyDTOToEntity(loan, loanEntity);
+            Map<Long, BookCategoriesDTO> bookDetailsMap = new HashMap<>();
+
+
+            Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(loan.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
+            for (BookCategoriesDTO book : body) {
+                bookDetailsMap.put(book.getId(), book);
+            }
+
+            for (LoanItemDTO loanItemDTO : loan.getItems()) {
+
+                catalogFeign.changeStockQuantity(loanItemDTO.getBookId(), loanItemDTO.getQuantity(), "DECREASE");
+
+            }
+            loanRepository.save(loanEntity);
+            return new LoanDTO(loanEntity, bookDetailsMap);
+        } catch (FeignException ex) {
+
+            logger.error("There was a error while making a feign request. Status:{}\nMessage: {}", ex.status(), ex.getMessage());
+            throw new RuntimeException("There was a error while accessing the catalog service\nPlease try it again!");
         }
-
-        copyDTOToEntity(loan, loanEntity);
-        Map<Long, BookCategoriesDTO> bookDetailsMap = new HashMap<>();
-
-        Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(loan.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
-        for (BookCategoriesDTO book : body) {
-            bookDetailsMap.put(book.getId(), book);
-        }
-
-        for (LoanItemDTO loanItemDTO : loan.getItems()) {
-
-            catalogFeign.changeStockQuantity(loanItemDTO.getBookId(), loanItemDTO.getQuantity(), "DECREASE");
-
-        }
-        loanRepository.save(loanEntity);
-        return new LoanDTO(loanEntity, bookDetailsMap);
 
     }
 
@@ -73,63 +85,94 @@ public class LoanService {
     @Transactional(readOnly = true)
     public RentalsBookCategoriesClientDTO getLoanInfoByClientId(Long clientId, Authentication authentication) {
 
-        ClientDTO clientFoundByID = clientFeign.findById(clientId).getBody();
-        if (clientFoundByID == null) {
-            throw new NoSuchElementException("Client not found");
-        }
+        try {
+            logger.info("Trying to fetch loan from client with id {}...", clientId);
+            ClientDTO clientFoundByID = clientFeign.findById(clientId).getBody();
+            if (clientFoundByID == null) {
+                logger.error("No client found with id {}", clientId);
+                throw new NoSuchElementException("Client not found");
+            }
 
-        if (!isUserAdminOrOwner(clientFoundByID, authentication)) {
-            return null;
-        }
+            if (!isUserAdminOrOwner(clientFoundByID, authentication)) {
+                logger.error("User is not admin or owner of loan");
+                return null;
+            }
 
-        List<Loan> loanByClientId = loanRepository.findLoansByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
+            List<Loan> loanByClientId = loanRepository.findLoansByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
 
-        Set<Long> allBookIds = loanByClientId.stream()
-                .flatMap(loan -> loan.getItems().stream())
-                .map(LoanItem::getBookId)
-                .collect(Collectors.toSet());
+            Set<Long> allBookIds = loanByClientId.stream().flatMap(loan -> loan.getItems().stream()).map(LoanItem::getBookId).collect(Collectors.toSet());
 
-        Map<Long, BookCategoriesDTO> bookDTOMap = new HashMap<>();
-        if (!allBookIds.isEmpty()) {
-            Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(allBookIds).getBody();
-            if (body != null) {
-                for (BookCategoriesDTO book : body) {
-                    bookDTOMap.put(book.getId(), book);
+            Map<Long, BookCategoriesDTO> bookDTOMap = new HashMap<>();
+            if (!allBookIds.isEmpty()) {
+                Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(allBookIds).getBody();
+                if (body != null) {
+                    for (BookCategoriesDTO book : body) {
+                        bookDTOMap.put(book.getId(), book);
+                    }
                 }
             }
+
+            logger.info("Found loans for client with id {}", clientId);
+            return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), loanByClientId, bookDTOMap);
+        } catch (FeignException ex) {
+
+            logger.error("There was a feign exception. Status: {}\nMessage: {}", ex.status(), ex.getMessage());
+            throw new RuntimeException("There was a error while accessing the catalog service", ex);
+
+
         }
 
-        return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), loanByClientId, bookDTOMap);
-    }
+        }
 
 
     @Transactional
-    public void returnBooks (UUID loanId, Long clientId) throws Exception {
+    public void returnBooks(UUID loanId, Long clientId) throws Exception {
 
 
-
-        Loan loan = loanRepository.findLoanById(loanId).orElseThrow(() -> new NoSuchElementException("Rental not found"));
-
-
-        if (loan.getClientId().equals(clientId)) {
+        try {
+            Loan loan = loanRepository.findLoanById(loanId).orElseThrow(() -> {
 
 
-            loan.setReturnDate(LocalDateTime.now());
-            loan.setStatus(LoanStatus.RETURNED);
-            Loan updatedEntity = loanRepository.save(loan);
+                logger.error("Loan with id {} not found", loanId);
+                return new NoSuchElementException("Loan not found");
 
-            for (LoanItem rentedItem : updatedEntity.getItems()) {
+            });
 
 
-                catalogFeign.changeStockQuantity(rentedItem.getBookId(), rentedItem.getQuantity(), "INCREASE");
+            if (loan.getClientId().equals(clientId)) {
 
+                if (loan.getStatus().equals(LoanStatus.RETURNED)) {
+
+                    logger.error("Loan with id {} has already been returned", loanId);
+                    throw new Exception("Loan already returned");
+
+                }
+
+                loan.setReturnDate(LocalDateTime.now());
+                loan.setStatus(LoanStatus.RETURNED);
+                Loan updatedEntity = loanRepository.save(loan);
+
+                for (LoanItem rentedItem : updatedEntity.getItems()) {
+
+
+                    catalogFeign.changeStockQuantity(rentedItem.getBookId(), rentedItem.getQuantity(), "INCREASE");
+
+
+                }
+
+                logger.info("All rented items returned successfully");
+
+            } else {
+
+                logger.error("No loan found belonging to this client");
+                throw new BadCredentialsException("Something went wrong with the returned loan");
 
             }
+        } catch (FeignException ex) {
 
-        } else {
 
-
-            throw new Exception("A error occurred, please check the data and try it again!");
+            logger.error("There was a error while making a feign request. Status: {}\nMessage: {}", ex.status(), ex.getMessage());
+            throw new RuntimeException("There was a error while accessing the catalog service", ex);
 
         }
 
@@ -159,7 +202,6 @@ public class LoanService {
     }
 
 
-
     private void copyDTOToEntity(LoanDTO dto, Loan entity) {
 
         entity.setClientId(dto.getClientId());
@@ -174,8 +216,6 @@ public class LoanService {
             entity.setDueDate(dto.getDueDate());
 
         }
-
-
 
 
         entity.setStatus(LoanStatus.ACTIVE);
@@ -195,8 +235,6 @@ public class LoanService {
 
 
     }
-
-
 
 
 }

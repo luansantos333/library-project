@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table (name = "tb_loan")
+@Table(name = "tb_loan")
 public class Loan {
 
     @Id
@@ -45,7 +45,7 @@ public class Loan {
         this.loanDate = loanDate;
         this.clientId = clientId;
         this.returnDate = returnDate;
-        this.dueDate =  dueDate;
+        this.dueDate = dueDate;
         this.status = status;
         this.items = items;
         this.total = total;

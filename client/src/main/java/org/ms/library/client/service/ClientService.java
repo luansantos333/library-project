@@ -1,5 +1,6 @@
 package org.ms.library.client.service;
 
+import feign.FeignException;
 import org.ms.library.client.dto.*;
 import org.ms.library.client.entity.Address;
 import org.ms.library.client.entity.Client;
@@ -8,6 +9,8 @@ import org.ms.library.client.repository.AddressRepository;
 import org.ms.library.client.repository.ClientRepository;
 import org.ms.library.client.repository.projections.ClientAddressProjection;
 import org.ms.library.client.service.exceptions.ClientNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-//@EnableWebSecurity
 public class ClientService {
 
     private final ClientRepository clientRepository;
     private final FeignClients feignClient;
     private final AddressRepository addressRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ClientService.class);
 
 
     public ClientService(ClientRepository clientRepository, FeignClients feignClient, AddressRepository addressRepository) {
@@ -40,10 +43,15 @@ public class ClientService {
 
         if (client.isPresent()) {
 
-
+            logger.info("Client with id {} found", id);
             return new ClientDTO(client.get());
 
-        } else throw new ClientNotFoundException("Client not found with id: " + id);
+        } else {
+
+            logger.error("Client with id {} not found", id);
+            throw new ClientNotFoundException("Client not found with id: " + id);
+
+        }
 
     }
 
@@ -51,6 +59,7 @@ public class ClientService {
     public Page<ClientDTO> findClient(String name, String cpf, Pageable pageable) {
 
         Page<Client> byName = clientRepository.findByName(name, cpf, pageable);
+        logger.info("Client with name {} found", name);
         return byName.map(x -> new ClientDTO(x));
 
     }
@@ -61,7 +70,7 @@ public class ClientService {
 
         if (!clientRepository.existsById(clientId)) {
 
-
+            logger.error("Client with id {} not found", clientId);
             throw new ClientNotFoundException("Client not found with the id: " + clientId);
 
         }
@@ -79,8 +88,9 @@ public class ClientService {
         address.setCountry(clientAddressDTO.getAddress().getCountry());
         Address savedAddress = addressRepository.save(address);
         client.setAddress(savedAddress);
-        clientRepository.save(client);
+        Client persistedEntity = clientRepository.save(client);
 
+        logger.info("Client with id {} has been updated", persistedEntity.getId());
         return new ClientAddressDTO(client);
 
 
@@ -90,7 +100,12 @@ public class ClientService {
     public ClientAddressDTO findClientAddressById(Long id) {
 
 
-        Client client = clientRepository.findAddressAndClientById(id).orElseThrow(() -> new ClientNotFoundException("Client not found with id: " + id));
+        Client client = clientRepository.findAddressAndClientById(id).orElseThrow(() -> {
+
+            logger.error("Client with id {} not found", id);
+            return new ClientNotFoundException("Client not found with id: " + id);
+
+        });
 
         return new ClientAddressDTO(client);
 
@@ -98,8 +113,11 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public Page<ClientAddressProjection> findClientsAndAdressesByNameOrCPF(Pageable pageable, String name, String cpf) {
+        return clientRepository.searchClientAddressByClientNameOrCpf(pageable, name, cpf).orElseThrow(()-> {
 
-        return clientRepository.searchClientAddressByClientNameOrCpf(pageable, name, cpf);
+            logger.error("No client found with the provided information. Name: {}\nCPF: {}", name, cpf);
+            return new ClientNotFoundException("No client not found with the name: " + name);
+        });
 
     }
 
@@ -107,24 +125,30 @@ public class ClientService {
     @Transactional
     public ClientAddressUserDTO createClientAddress(ClientAddressUserDTO clientAddressUserDTO) throws Exception {
 
-
         Client client = new Client();
         Address address = new Address();
         UserDTO user = createUser(clientAddressUserDTO);
         copyDTOContentToEntity(clientAddressUserDTO, client, user, address);
         Client savedClient = clientRepository.save(client);
+        logger.info("New client created with id {}", savedClient.getId());
         return new ClientAddressUserDTO(savedClient, new UserCompleteDTO(user.getUsername(), user.getPassword()));
 
     }
 
 
-    public UserDTO createUser(ClientAddressUserDTO clientAddressUserDTO) {
+    public UserDTO createUser(ClientAddressUserDTO clientAddressUserDTO) throws Exception {
 
         UserDTO userDTO = new UserDTO(clientAddressUserDTO.getUser().getUsername(), clientAddressUserDTO.getUser().getPassword());
+        try {
+            ResponseEntity<UserDTO> user = feignClient.createUser(userDTO);
+            return user.getBody();
 
-        ResponseEntity<UserDTO> user = feignClient.createUser(userDTO);
+        } catch (FeignException ex) {
 
-        return user.getBody();
+            logger.error("There was a feign exception while trying to communicate with user service. Status: {}\nMessage: {} ", ex.status(), ex.getMessage());
+            throw new Exception("There was a error trying to create a new user\nPlease try again later");
+
+        }
 
     }
 

@@ -26,19 +26,19 @@ public class LoanController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<RentalsBookCategoriesClientDTO> getRentalsByClientId(@PathVariable (name = "id") String id, Authentication authentication) {
+    public ResponseEntity<RentalsBookCategoriesClientDTO> getLoanByClientId(@PathVariable(name = "id") String id, Authentication authentication) {
 
-        RentalsBookCategoriesClientDTO rentalInfoByClientId = loanService.getLoanInfoByClientId(Long.parseLong(id), authentication);
-        if (rentalInfoByClientId == null) {
+        RentalsBookCategoriesClientDTO loanInfoByClientId = loanService.getLoanInfoByClientId(Long.parseLong(id), authentication);
+        if (loanInfoByClientId == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.ok(rentalInfoByClientId);
+        return ResponseEntity.ok(loanInfoByClientId);
 
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<LoanDTO> createRental (@Valid @RequestBody LoanDTO rental) {
+    public ResponseEntity<LoanDTO> makeNewLoan(@Valid @RequestBody LoanDTO rental) {
 
         LoanDTO loanDTO = loanService.orderNewLoan(rental);
         HttpStatus status = HttpStatus.CREATED;
@@ -49,7 +49,7 @@ public class LoanController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PutMapping("/return/{id}/{clientId}")
-    public ResponseEntity<Void>  returnBook (@PathVariable (name = "id") UUID rentalId,  @PathVariable (name = "clientId") Long clientId) {
+    public ResponseEntity<Void> returnBook(@PathVariable(name = "id") UUID rentalId, @PathVariable(name = "clientId") Long clientId) {
 
         try {
 

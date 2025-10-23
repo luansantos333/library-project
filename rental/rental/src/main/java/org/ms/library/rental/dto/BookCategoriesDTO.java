@@ -1,7 +1,5 @@
 package org.ms.library.rental.dto;
 
-import jakarta.validation.constraints.NotNull;
-
 import java.util.HashSet;
 import java.util.Set;
 

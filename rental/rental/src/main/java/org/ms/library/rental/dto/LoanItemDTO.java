@@ -12,7 +12,7 @@ public class LoanItemDTO {
     private String author;
     private Double price;
     private Integer quantity;
-    private Set<CategoryDTO> categories = new HashSet<>();
+    private final Set<CategoryDTO> categories = new HashSet<>();
 
     public LoanItemDTO(LoanItem loanItem, BookCategoriesDTO bookDetails) {
         this.bookId = loanItem.getBookId();

@@ -17,6 +17,7 @@ public interface CatalogFeign {
 
     @GetMapping("/by-ids")
     ResponseEntity<Set<BookCategoriesDTO>> findBooksByIds(@RequestParam(name = "ids", required = true) Set<Long> ids);
+
     @PutMapping("/stock/{id}")
-    ResponseEntity<BookCategoriesDTO> changeStockQuantity(@PathVariable(name = "id") Long id, @RequestParam(required = true, name = "amount") Integer amount, @RequestParam (required = true, name = "operation", defaultValue = "increase") String operation);
+    ResponseEntity<BookCategoriesDTO> changeStockQuantity(@PathVariable(name = "id") Long id, @RequestParam(required = true, name = "amount") Integer amount, @RequestParam(required = true, name = "operation", defaultValue = "increase") String operation);
 }

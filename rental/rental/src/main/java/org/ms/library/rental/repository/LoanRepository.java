@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
 
-    @Query (value = "SELECT l FROM Loan l WHERE l.clientId = :clientId")
+    @Query(value = "SELECT l FROM Loan l WHERE l.clientId = :clientId")
     Optional<List<Loan>> findLoansByClientId(@Param("clientId") Long clientId);
 
     @Query
