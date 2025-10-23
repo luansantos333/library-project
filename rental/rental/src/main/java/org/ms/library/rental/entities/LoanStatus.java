@@ -1,6 +1,6 @@
 package org.ms.library.rental.entities;
 
-public enum RentalStatus {
+public enum LoanStatus {
 
     ACTIVE,
     RETURNED,

@@ -1,6 +1,6 @@
 package org.ms.library.rental.repository;
 
-import org.ms.library.rental.entities.Rental;
+import org.ms.library.rental.entities.Loan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,13 +11,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface RentalRepository extends JpaRepository<Rental, Long> {
+public interface LoanRepository extends JpaRepository<Loan, Long> {
 
 
-    @Query (value = "SELECT r FROM tb_rental r WHERE r.clientId = :clientId")
-    Optional<List<Rental>> findRentalsByClientId (@Param("clientId") Long clientId);
+    @Query (value = "SELECT l FROM Loan l WHERE l.clientId = :clientId")
+    Optional<List<Loan>> findLoansByClientId(@Param("clientId") Long clientId);
 
     @Query
-    Optional<Rental> findRentalById(@Param("clientId") UUID id);
+    Optional<Loan> findLoanById(@Param("clientId") UUID id);
 
 }

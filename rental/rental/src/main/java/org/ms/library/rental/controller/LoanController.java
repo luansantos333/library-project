@@ -1,9 +1,9 @@
 package org.ms.library.rental.controller;
 
 import jakarta.validation.Valid;
-import org.ms.library.rental.dto.RentalDTO;
+import org.ms.library.rental.dto.LoanDTO;
 import org.ms.library.rental.dto.RentalsBookCategoriesClientDTO;
-import org.ms.library.rental.service.RentalService;
+import org.ms.library.rental.service.LoanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,20 +15,20 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/rental")
-public class RentalController {
+@RequestMapping("/api/loan")
+public class LoanController {
 
-    private final RentalService rentalService;
+    private final LoanService loanService;
 
-    public RentalController(RentalService rentalService) {
-        this.rentalService = rentalService;
+    public LoanController(LoanService loanService) {
+        this.loanService = loanService;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<RentalsBookCategoriesClientDTO> getRentalsByClientId(@PathVariable (name = "id") String id, Authentication authentication) {
 
-        RentalsBookCategoriesClientDTO rentalInfoByClientId = rentalService.getRentalInfoByClientId(Long.parseLong(id), authentication);
+        RentalsBookCategoriesClientDTO rentalInfoByClientId = loanService.getLoanInfoByClientId(Long.parseLong(id), authentication);
         if (rentalInfoByClientId == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -38,12 +38,12 @@ public class RentalController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<RentalDTO> createRental (@Valid @RequestBody RentalDTO rental) {
+    public ResponseEntity<LoanDTO> createRental (@Valid @RequestBody LoanDTO rental) {
 
-        RentalDTO rentalDTO = rentalService.orderNewRental(rental);
+        LoanDTO loanDTO = loanService.orderNewLoan(rental);
         HttpStatus status = HttpStatus.CREATED;
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(rentalDTO.getClientId()).toUri();
-        return ResponseEntity.created(location).body(rentalDTO);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(loanDTO.getClientId()).toUri();
+        return ResponseEntity.created(location).body(loanDTO);
 
     }
 
@@ -53,7 +53,7 @@ public class RentalController {
 
         try {
 
-            rentalService.returnBooks(rentalId, clientId);
+            loanService.returnBooks(rentalId, clientId);
 
         } catch (Exception ex) {
 

@@ -1,4 +1,4 @@
-package org.ms.library.catalog.configuration.JWTAuthenticationConverter;
+package org.ms.library.client.config.JWTAuthenticationConverter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class JWTAuthenticationConverter implements Converter<Jwt,JWTAuthenticationObject> {

@@ -8,29 +8,30 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity(name = "tb_rental")
-public class Rental {
+@Entity
+@Table (name = "tb_loan")
+public class Loan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(nullable = false)
-    private LocalDateTime rentalDate;
+    private LocalDateTime loanDate;
     @Column(nullable = false)
     private Long clientId;
     private LocalDateTime returnDate;
     @Column(nullable = false)
     private LocalDateTime dueDate;
     @Enumerated(EnumType.STRING)
-    private RentalStatus status;
+    private LoanStatus status;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RentalItem> items = new HashSet<>();
+    private Set<LoanItem> items = new HashSet<>();
     private Double total;
 
 
-    public Rental(UUID id, LocalDateTime rentalDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, RentalStatus status, Set<RentalItem> items) {
+    public Loan(UUID id, LocalDateTime loanDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, LoanStatus status, Set<LoanItem> items) {
         this.id = id;
-        this.rentalDate = rentalDate;
+        this.loanDate = loanDate;
         this.clientId = clientId;
         this.returnDate = returnDate;
         this.dueDate = dueDate;
@@ -39,9 +40,9 @@ public class Rental {
     }
 
 
-    public Rental(UUID id, LocalDateTime rentalDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, RentalStatus status, Set<RentalItem> items, Double total) {
+    public Loan(UUID id, LocalDateTime loanDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, LoanStatus status, Set<LoanItem> items, Double total) {
         this.id = id;
-        this.rentalDate = rentalDate;
+        this.loanDate = loanDate;
         this.clientId = clientId;
         this.returnDate = returnDate;
         this.dueDate =  dueDate;
@@ -50,7 +51,7 @@ public class Rental {
         this.total = total;
     }
 
-    public Rental() {
+    public Loan() {
     }
 
     public Double getTotal() {
@@ -69,12 +70,12 @@ public class Rental {
         this.id = id;
     }
 
-    public LocalDateTime getRentalDate() {
-        return rentalDate;
+    public LocalDateTime getLoanDate() {
+        return loanDate;
     }
 
-    public void setRentalDate(LocalDateTime rentalDate) {
-        this.rentalDate = rentalDate;
+    public void setLoanDate(LocalDateTime rentalDate) {
+        this.loanDate = rentalDate;
     }
 
     public Long getClientId() {
@@ -101,23 +102,23 @@ public class Rental {
         this.dueDate = dueDate;
     }
 
-    public RentalStatus getStatus() {
+    public LoanStatus getStatus() {
         return status;
     }
 
-    public void setStatus(RentalStatus status) {
+    public void setStatus(LoanStatus status) {
         this.status = status;
     }
 
-    public Set<RentalItem> getItems() {
+    public Set<LoanItem> getItems() {
         return items;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Rental rental = (Rental) o;
-        return Objects.equals(id, rental.id);
+        Loan loan = (Loan) o;
+        return Objects.equals(id, loan.id);
     }
 
     @Override

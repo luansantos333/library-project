@@ -1,10 +1,9 @@
 package org.ms.library.rental.dto;
 
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import org.ms.library.rental.entities.Rental;
-import org.ms.library.rental.entities.RentalItem;
+import org.ms.library.rental.entities.Loan;
+import org.ms.library.rental.entities.LoanItem;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -12,40 +11,40 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class RentalDTO {
+public class LoanDTO {
 
     private UUID id;
-    private LocalDateTime rentalDate;
+    private LocalDateTime loanDate;
     @NotNull (message = "Client id required")
     private Long clientId;
     @PastOrPresent (message = "Return date needs to be today or before")
     private LocalDateTime returnDate;
     private LocalDateTime dueDate;
     @NotNull (message = "You need to rent atleast one book to call this service")
-    private Set<RentalItemDTO> items = new HashSet<>();
+    private Set<LoanItemDTO> items = new HashSet<>();
     private Double total;
 
-    public RentalDTO(Rental entity, Map<Long, BookCategoriesDTO> bookDetailsMap) {
+    public LoanDTO(Loan entity, Map<Long, BookCategoriesDTO> bookDetailsMap) {
 
         this.id = entity.getId();
-        this.rentalDate = entity.getRentalDate();
+        this.loanDate = entity.getLoanDate();
         this.clientId = entity.getClientId();
         this.dueDate = entity.getDueDate();
         this.total = 0.0;
 
-        for (RentalItem item : entity.getItems()) {
+        for (LoanItem item : entity.getItems()) {
             BookCategoriesDTO bookDetails = bookDetailsMap.get(item.getBookId());
             if (bookDetails != null) {
-                items.add(new RentalItemDTO(item, bookDetails));
+                items.add(new LoanItemDTO(item, bookDetails));
                 this.total += (bookDetails.getPrice() * item.getQuantity());
             }
         }
     }
 
 
-    public RentalDTO(UUID id, LocalDateTime rentalDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, Set<RentalItemDTO> items, Double total) {
+    public LoanDTO(UUID id, LocalDateTime loanDate, Long clientId, LocalDateTime returnDate, LocalDateTime dueDate, Set<LoanItemDTO> items, Double total) {
         this.id = id;
-        this.rentalDate = rentalDate;
+        this.loanDate = loanDate;
         this.clientId = clientId;
         this.returnDate = returnDate;
         this.dueDate = dueDate;
@@ -54,19 +53,19 @@ public class RentalDTO {
     }
 
 
-    public RentalDTO(Rental entity, Map<Long, BookCategoriesDTO> bookDetailsMap, LocalDateTime returnDate) {
+    public LoanDTO(Loan entity, Map<Long, BookCategoriesDTO> bookDetailsMap, LocalDateTime returnDate) {
 
         this.id = entity.getId();
-        this.rentalDate = entity.getRentalDate();
+        this.loanDate = entity.getLoanDate();
         this.clientId = entity.getClientId();
         this.dueDate = entity.getDueDate();
         this.total = 0.0;
         this.returnDate = returnDate;
 
-        for (RentalItem item : entity.getItems()) {
+        for (LoanItem item : entity.getItems()) {
             BookCategoriesDTO bookDetails = bookDetailsMap.get(item.getBookId());
             if (bookDetails != null) {
-                items.add(new RentalItemDTO(item, bookDetails));
+                items.add(new LoanItemDTO(item, bookDetails));
                 this.total += bookDetails.getPrice();
             }
         }
@@ -76,7 +75,7 @@ public class RentalDTO {
 
 
 
-    public RentalDTO() {
+    public LoanDTO() {
     }
 
 
@@ -94,8 +93,8 @@ public class RentalDTO {
         return id;
     }
 
-    public LocalDateTime getRentalDate() {
-        return rentalDate;
+    public LocalDateTime getLoanDate() {
+        return loanDate;
     }
 
     public Long getClientId() {
@@ -106,7 +105,7 @@ public class RentalDTO {
         return dueDate;
     }
 
-    public Set<RentalItemDTO> getItems() {
+    public Set<LoanItemDTO> getItems() {
         return items;
     }
 

@@ -8,7 +8,7 @@ public class ClientAddressDTO {
     private String lastName;
     private String cpf;
     private String phone;
-    private AddressDTO addressDTO;
+    private AddressDTO address;
 
 
 public ClientAddressDTO (Client entity) {
@@ -19,7 +19,7 @@ public ClientAddressDTO (Client entity) {
     this.cpf = entity.getCpf();
     this.phone = entity.getPhone();
 
-    this.addressDTO = new AddressDTO(entity.getAddress());
+    this.address = new AddressDTO(entity.getAddress());
 
 }
 
@@ -46,7 +46,7 @@ public ClientAddressDTO (Client entity) {
         return phone;
     }
 
-    public AddressDTO getAddressDTO() {
-        return addressDTO;
+    public AddressDTO getAddress() {
+        return address;
     }
 }

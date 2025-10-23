@@ -1,11 +1,11 @@
 package org.ms.library.rental.dto;
 
-import org.ms.library.rental.entities.RentalItem;
+import org.ms.library.rental.entities.LoanItem;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class RentalItemDTO {
+public class LoanItemDTO {
 
     private Long bookId;
     private String title;
@@ -14,12 +14,12 @@ public class RentalItemDTO {
     private Integer quantity;
     private Set<CategoryDTO> categories = new HashSet<>();
 
-    public RentalItemDTO(RentalItem rentalItem, BookCategoriesDTO bookDetails) {
-        this.bookId = rentalItem.getBookId();
+    public LoanItemDTO(LoanItem loanItem, BookCategoriesDTO bookDetails) {
+        this.bookId = loanItem.getBookId();
         this.title = bookDetails.getTitle();
         this.author = bookDetails.getAuthor();
         this.price = bookDetails.getPrice();
-        this.quantity = rentalItem.getQuantity();
+        this.quantity = loanItem.getQuantity();
 
         for (CategoryDTO category : bookDetails.getCategories()) {
 
@@ -29,7 +29,7 @@ public class RentalItemDTO {
 
     }
 
-    public RentalItemDTO() {
+    public LoanItemDTO() {
     }
 
     public Set<CategoryDTO> getCategories() {

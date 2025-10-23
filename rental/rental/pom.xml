@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.ms.library</groupId>
-	<artifactId>rental</artifactId>
+	<artifactId>loan</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>rental</name>
+	<name>loan</name>
 	<description>Rental service for the library</description>
 	<url/>
 	<licenses>

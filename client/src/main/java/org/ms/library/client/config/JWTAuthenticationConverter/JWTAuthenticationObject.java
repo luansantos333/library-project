@@ -1,4 +1,4 @@
-package org.ms.library.catalog.configuration.JWTAuthenticationConverter;
+package org.ms.library.client.config.JWTAuthenticationConverter;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -6,7 +6,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public class JWTAuthenticationObject extends JwtAuthenticationToken {
 

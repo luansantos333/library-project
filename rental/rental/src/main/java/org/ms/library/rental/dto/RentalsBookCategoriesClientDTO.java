@@ -1,6 +1,6 @@
 package org.ms.library.rental.dto;
 
-import org.ms.library.rental.entities.Rental;
+import org.ms.library.rental.entities.Loan;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,20 +12,20 @@ public class RentalsBookCategoriesClientDTO {
     private String clientLastName;
     private String ClientCpf;
     private String clientPhone;
-    private List<RentalDTO> rentals = new ArrayList<>();
+    private List<LoanDTO> rentals = new ArrayList<>();
     private Double total;
 
 
-    public RentalsBookCategoriesClientDTO(String clientName, String clientLastName, String clientCpf, String clientPhone, List<Rental> entity, Map<Long, BookCategoriesDTO> bookDetailsMap) {
+    public RentalsBookCategoriesClientDTO(String clientName, String clientLastName, String clientCpf, String clientPhone, List<Loan> entity, Map<Long, BookCategoriesDTO> bookDetailsMap) {
         this.clientName = clientName;
         this.clientLastName = clientLastName;
         this.ClientCpf = clientCpf;
         this.clientPhone = clientPhone;
         this.total = 0.0;
-        for (Rental rental : entity) {
-            RentalDTO rentalDTO = new RentalDTO(rental, bookDetailsMap);
-            this.rentals.add(rentalDTO);
-            this.total += rentalDTO.getTotal();
+        for (Loan loan : entity) {
+            LoanDTO loanDTO = new LoanDTO(loan, bookDetailsMap);
+            this.rentals.add(loanDTO);
+            this.total += loanDTO.getTotal();
         }
 
 
@@ -51,7 +51,7 @@ public class RentalsBookCategoriesClientDTO {
         return clientPhone;
     }
 
-    public List<RentalDTO> getRentals() {
+    public List<LoanDTO> getRentals() {
         return rentals;
     }
 

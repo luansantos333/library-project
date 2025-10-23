@@ -1,14 +1,14 @@
 package org.ms.library.rental.service;
 
 import org.ms.library.rental.dto.*;
-import org.ms.library.rental.entities.Rental;
-import org.ms.library.rental.entities.RentalItem;
-import org.ms.library.rental.entities.RentalStatus;
+import org.ms.library.rental.entities.Loan;
+import org.ms.library.rental.entities.LoanItem;
+import org.ms.library.rental.entities.LoanStatus;
 import org.ms.library.rental.feign.CatalogFeign;
 import org.ms.library.rental.feign.ClientFeign;
 import org.ms.library.rental.feign.UserFeign;
-import org.ms.library.rental.repository.RentalItemRepository;
-import org.ms.library.rental.repository.RentalRepository;
+import org.ms.library.rental.repository.LoanItemRepository;
+import org.ms.library.rental.repository.LoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class RentalService {
+public class LoanService {
     @Autowired
     private CatalogFeign catalogFeign;
 
@@ -31,19 +31,19 @@ public class RentalService {
     @Autowired
     private UserFeign userFeign;
 
-    private final RentalRepository rentalRepository;
-    private final RentalItemRepository rentalItemRepository;
+    private final LoanRepository loanRepository;
+    private final LoanItemRepository loanItemRepository;
 
-    public RentalService(RentalRepository rentalRepository, RentalItemRepository rentalItemRepository) {
-        this.rentalRepository = rentalRepository;
-        this.rentalItemRepository = rentalItemRepository;
+    public LoanService(LoanRepository loanRepository, LoanItemRepository loanItemRepository) {
+        this.loanRepository = loanRepository;
+        this.loanItemRepository = loanItemRepository;
     }
 
     @Transactional
-    public RentalDTO orderNewRental(RentalDTO rental) {
+    public LoanDTO orderNewLoan(LoanDTO loan) {
 
-        Rental rentalEntity = new Rental();
-        ResponseEntity<ClientDTO> clientFeignById = clientFeign.findById(rental.getClientId());
+        Loan loanEntity = new Loan();
+        ResponseEntity<ClientDTO> clientFeignById = clientFeign.findById(loan.getClientId());
 
         if (clientFeignById.getBody().getId() == null) {
 
@@ -51,27 +51,27 @@ public class RentalService {
 
         }
 
-        copyDTOToEntity(rental, rentalEntity);
+        copyDTOToEntity(loan, loanEntity);
         Map<Long, BookCategoriesDTO> bookDetailsMap = new HashMap<>();
 
-        Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(rental.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
+        Set<BookCategoriesDTO> body = catalogFeign.findBooksByIds(loan.getItems().stream().map(x -> x.getBookId()).collect(Collectors.toSet())).getBody();
         for (BookCategoriesDTO book : body) {
             bookDetailsMap.put(book.getId(), book);
         }
 
-        for (RentalItemDTO rentalItemDTO : rental.getItems()) {
+        for (LoanItemDTO loanItemDTO : loan.getItems()) {
 
-            catalogFeign.changeStockQuantity(rentalItemDTO.getBookId(), rentalItemDTO.getQuantity(), "DECREASE");
+            catalogFeign.changeStockQuantity(loanItemDTO.getBookId(), loanItemDTO.getQuantity(), "DECREASE");
 
         }
-        rentalRepository.save(rentalEntity);
-        return new RentalDTO(rentalEntity, bookDetailsMap);
+        loanRepository.save(loanEntity);
+        return new LoanDTO(loanEntity, bookDetailsMap);
 
     }
 
 
     @Transactional(readOnly = true)
-    public RentalsBookCategoriesClientDTO getRentalInfoByClientId(Long clientId, Authentication authentication) {
+    public RentalsBookCategoriesClientDTO getLoanInfoByClientId(Long clientId, Authentication authentication) {
 
         ClientDTO clientFoundByID = clientFeign.findById(clientId).getBody();
         if (clientFoundByID == null) {
@@ -82,11 +82,11 @@ public class RentalService {
             return null;
         }
 
-        List<Rental> rentalsByClientId = rentalRepository.findRentalsByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
+        List<Loan> loanByClientId = loanRepository.findLoansByClientId(clientFoundByID.getId()).orElseThrow(NoSuchElementException::new);
 
-        Set<Long> allBookIds = rentalsByClientId.stream()
-                .flatMap(rental -> rental.getItems().stream())
-                .map(RentalItem::getBookId)
+        Set<Long> allBookIds = loanByClientId.stream()
+                .flatMap(loan -> loan.getItems().stream())
+                .map(LoanItem::getBookId)
                 .collect(Collectors.toSet());
 
         Map<Long, BookCategoriesDTO> bookDTOMap = new HashMap<>();
@@ -99,26 +99,26 @@ public class RentalService {
             }
         }
 
-        return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), rentalsByClientId, bookDTOMap);
+        return new RentalsBookCategoriesClientDTO(clientFoundByID.getName(), clientFoundByID.getLastName(), clientFoundByID.getCpf(), clientFoundByID.getPhone(), loanByClientId, bookDTOMap);
     }
 
 
     @Transactional
-    public void returnBooks (UUID rentalId, Long clientId) throws Exception {
+    public void returnBooks (UUID loanId, Long clientId) throws Exception {
 
 
 
-        Rental rental = rentalRepository.findRentalById(rentalId).orElseThrow(() -> new NoSuchElementException("Rental not found"));
+        Loan loan = loanRepository.findLoanById(loanId).orElseThrow(() -> new NoSuchElementException("Rental not found"));
 
 
-        if (rental.getClientId().equals(clientId)) {
+        if (loan.getClientId().equals(clientId)) {
 
 
-            rental.setReturnDate(LocalDateTime.now());
-            rental.setStatus(RentalStatus.RETURNED);
-            Rental updatedEntity = rentalRepository.save(rental);
+            loan.setReturnDate(LocalDateTime.now());
+            loan.setStatus(LoanStatus.RETURNED);
+            Loan updatedEntity = loanRepository.save(loan);
 
-            for (RentalItem rentedItem : updatedEntity.getItems()) {
+            for (LoanItem rentedItem : updatedEntity.getItems()) {
 
 
                 catalogFeign.changeStockQuantity(rentedItem.getBookId(), rentedItem.getQuantity(), "INCREASE");
@@ -160,14 +160,14 @@ public class RentalService {
 
 
 
-    private void copyDTOToEntity(RentalDTO dto, Rental entity) {
+    private void copyDTOToEntity(LoanDTO dto, Loan entity) {
 
         entity.setClientId(dto.getClientId());
-        entity.setRentalDate(dto.getRentalDate());
+        entity.setLoanDate(dto.getLoanDate());
 
         if (dto.getDueDate() == null || dto.getDueDate().toString().isBlank()) {
 
-            entity.setDueDate(dto.getRentalDate().plusDays(30L));
+            entity.setDueDate(dto.getLoanDate().plusDays(30L));
 
         } else {
 
@@ -178,20 +178,20 @@ public class RentalService {
 
 
 
-        entity.setStatus(RentalStatus.ACTIVE);
-        Set<RentalItem> rentalItemSet = new HashSet<>();
+        entity.setStatus(LoanStatus.ACTIVE);
+        Set<LoanItem> loanItemSet = new HashSet<>();
 
-        for (RentalItemDTO item : dto.getItems()) {
+        for (LoanItemDTO item : dto.getItems()) {
 
-            RentalItem rentalItem = new RentalItem();
-            rentalItem.setBookId(item.getBookId());
-            rentalItem.setPrice(catalogFeign.findOneBook(item.getBookId()).getBody().getPrice());
-            rentalItem.setQuantity(item.getQuantity());
-            rentalItemSet.add(rentalItem);
+            LoanItem loanItem = new LoanItem();
+            loanItem.setBookId(item.getBookId());
+            loanItem.setPrice(catalogFeign.findOneBook(item.getBookId()).getBody().getPrice());
+            loanItem.setQuantity(item.getQuantity());
+            loanItemSet.add(loanItem);
         }
 
-        entity.setTotal(rentalItemSet.stream().mapToDouble(x -> x.getPrice()).sum());
-        entity.getItems().addAll(rentalItemSet);
+        entity.setTotal(loanItemSet.stream().mapToDouble(x -> x.getPrice()).sum());
+        entity.getItems().addAll(loanItemSet);
 
 
     }

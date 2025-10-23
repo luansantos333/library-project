@@ -47,7 +47,7 @@ public class BookController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<BookCategoriesDTO> findOneBook(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<BookCategoriesDTO> findOneBookById(@PathVariable(name = "id") Long id) {
 
         BookCategoriesDTO bookById = service.getBookCategoriesByBookID(id);
 

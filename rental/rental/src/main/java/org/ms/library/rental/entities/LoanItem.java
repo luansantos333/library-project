@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 
 import java.util.Objects;
 
-@Entity(name = "tb_rental_itens")
-public class RentalItem {
+@Entity
+@Table(name = "tb_loan_itens")
+public class LoanItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,21 +15,21 @@ public class RentalItem {
     private Double price;
     private Integer quantity;
 
-    public RentalItem(Long id, Rental rental, Long bookId) {
+    public LoanItem(Long id, Loan loan, Long bookId) {
         this.id = id;
         this.bookId = bookId;
     }
 
-    public RentalItem(Long bookId, Double price, Integer quantity) {
+    public LoanItem(Long bookId, Double price, Integer quantity) {
         this.bookId = bookId;
         this.price = price;
         this.quantity = quantity;
     }
 
-    public RentalItem() {
+    public LoanItem() {
     }
 
-    public RentalItem(Long id, Long bookId, Double price) {
+    public LoanItem(Long id, Long bookId, Double price) {
         this.id = id;
         this.bookId = bookId;
         this.price = price;
@@ -71,7 +72,7 @@ public class RentalItem {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        RentalItem that = (RentalItem) o;
+        LoanItem that = (LoanItem) o;
         return Objects.equals(id, that.id) && Objects.equals(bookId, that.bookId);
     }
 

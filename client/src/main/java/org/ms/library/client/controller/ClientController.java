@@ -76,7 +76,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping ("/address")
+    @GetMapping ("/advanced")
     public ResponseEntity<Page<ClientAddressProjection>> findClientsAndAddressesByNameOrCPF (Pageable p, @RequestParam (name = "name", required = false) String name,
                                                                                              @RequestParam (name = "cpf", required = false) String cpf) {
 
